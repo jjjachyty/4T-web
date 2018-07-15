@@ -1,0 +1,44 @@
+{
+    "name": "4t_web",
+    "version": "1.0.0",
+    "description": "www.fortravel.cn",
+    "author": "zl <jjjachyty@163.com>",
+    "private": true,
+    "scripts": {
+        "dev": "nuxt",
+        "build": "nuxt build",
+        "start": "nuxt start",
+        "generate": "nuxt generate",
+        "lintfix": "eslint --fix  --ext  .js,.vue src test/unit/specs test/e2e/specs"
+    },
+    "dependencies": {
+        "bson-objectid": "^1.2.3",
+        "eslint-plugin-vuefix": "^0.2.1",
+        "moment": "^2.22.2",
+        "nuxt": "^1.0.0",
+        "v-viewer": "^1.1.0",
+        "vue-carousel": "^0.9.0",
+        "vue-input-tag": "^1.0.4",
+        "vue-meta-info": "^0.1.6",
+        "vuelidate": "^0.7.4",
+        "vuetify": "^1.1.1",
+        "vuex-persistedstate": "^2.5.4"
+    },
+    "devDependencies": {
+        "axios": "^0.18.0",
+        "babel-eslint": "^7.2.3",
+        "babel-plugin-transform-imports": "^1.4.1",
+        "eslint": "^4.3.0",
+        "eslint-config-standard": "^10.2.1",
+        "eslint-loader": "^1.9.0",
+        "eslint-plugin-html": "^3.1.1",
+        "eslint-plugin-import": "^2.7.0",
+        "eslint-plugin-node": "^5.1.1",
+        "eslint-plugin-promise": "^3.5.0",
+        "eslint-plugin-standard": "^3.0.1",
+        "mavon-editor": "^2.6.15",
+        "stylus": "^0.54.5",
+        "stylus-loader": "^3.0.1",
+        "vue-showdown": "^1.0.1"
+    }
+}
