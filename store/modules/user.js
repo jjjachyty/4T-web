@@ -1,4 +1,5 @@
 import * as types from '../mutation-types'
+import api from '~/service'
 import {
   avatarRoot
 } from '~/config'
@@ -31,8 +32,7 @@ const actions = {
     return this.$http.post('/user/valididcard', idCard)
   },
   async getUserInfo (context, params) {
-    console.log('context', context)
-    return '' // context.$http.get('/user/info', params)
+    return api.get('/user/info', params)
   },
   async getMessage ({
     dispatch,
