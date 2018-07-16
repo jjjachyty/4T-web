@@ -1,16 +1,18 @@
 <template>
   <div class="container">
-    <v-card class="error">
+    <v-card class="error-card">
     <v-card-media class="text-xs-center">
-        <img class="img" src="error.png" />
+        <img class="img" src="/error.png" />
+       
     </v-card-media>
-    <v-divider></v-divider>
-    <v-card-title class="text-xs-center"><span v-if="error.statusCode === 404">页面不存在</span>
+    <v-card-title class="text-xs-center">
+      <div>
+    <span v-if="error.statusCode === 404">页面不存在</span>
     
-    <span v-else >哦吼～发生错误,请稍后再试</span>
-    
+    <span v-else class="body-2 grey--text">哦吼～发生错误,请稍后再试</span>
+    {{error}}
+    </div>
 </v-card-title>
-    <v-divider></v-divider>
 <v-card-text>
     
 </v-card-text>
@@ -25,8 +27,8 @@
 
 <script>
 export default {
-  props: ["error"]
-};
+  props: ['error']
+}
 </script>
 <style scoped>
 .img {
@@ -34,7 +36,7 @@ export default {
   width: 20%;
   margin-left: 40%;
 }
-.error {
+.error-card {
   margin-top: 20%;
 }
 </style>

@@ -26,7 +26,7 @@
       </div>
       <v-layout row wrap>
         <v-flex md3 xs12 v-for=" item in items" :key="item.id">
-          <a @click="toDetail(item)">
+          <nuxt-link :to="/purchase/+item.id">
           <v-card>
             <v-layout row>
               <v-flex xs8 md10>
@@ -71,7 +71,7 @@
             </v-card-actions>
 
           </v-card>
-          </a>
+         </nuxt-link>
         </v-flex>
 
 
@@ -80,47 +80,44 @@
   </div>
 </template>
 <script>
-import { Carousel, Slide } from "vue-carousel";
-import { avatarRoot } from "~/config";
+import { Carousel, Slide } from 'vue-carousel'
+import { avatarRoot } from '~/config'
 
 export default {
   components: {
     Carousel,
     Slide
   },
-  props: ["items"],
-  data() {
+  props: ['items'],
+  data () {
     return {
       purchType: 0,
-      keyWords: "",
+      keyWords: '',
       filter: false,
       filters: {},
       avatarRoot: avatarRoot
-    };
+    }
   },
   methods: {
-    toDetail(item) {
-      this.$router.push({
-        name: "purchase",
-        params: { id: item.id, item: item }
-      });
+    toDetail (item) {
+      this.$router.push('/purchase/' + item.id)
     },
-    serach() {
-      this.query({ keyWords: this.keyWords });
+    serach () {
+      this.query({ keyWords: this.keyWords })
     },
-    clear() {
-      this.keyWords = null;
-      this.query();
+    clear () {
+      this.keyWords = null
+      this.query()
     },
-    query(params) {
-      api.get("/purchases", params).then(res => {
+    query (params) {
+      this.$http.get('/purchases', params).then(res => {
         if (res.data.Status) {
-          this.items = res.data.Data;
+          this.items = res.data.Data
         }
-      });
+      })
     }
   }
-};
+}
 </script>
 <style scoped>
 .serach {

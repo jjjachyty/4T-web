@@ -35,15 +35,16 @@ module.exports = {
     src: '~/plugins/localStorage.js',
     ssr: false
   }, {
-    src: '~/plugins/http.js',
-    ssr: false
-  }, {
     src: '~/plugins/metainfo.js',
+    ssr: true
+  }, {
+    src: '~/plugins/http.js',
     ssr: true
   }],
   css: [
     '~/assets/style/app.styl',
-    'vuetify/dist/vuetify.min.css'
+    'vuetify/dist/vuetify.min.css',
+    'viewerjs/dist/viewer.css'
   ],
   /*
      ** Customize the progress bar color

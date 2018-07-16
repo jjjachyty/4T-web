@@ -78,9 +78,13 @@
                   <v-layout row justify-center>
 
                     <v-flex md2 xs3 >
-                           <div v-viewer="options" class="images clearfix">
+                           <!-- <div v-viewer="options" class="images clearfix">
                             <img :src="purchaseRoot+pd.images+'?'+Number(new Date())" :data-source="purchaseRoot+pd.images+'?'+Number(new Date())" class="image" >
-                        </div>
+                        </div> -->
+
+                      <vue-preview :slides="{src:purchaseRoot+pd.images+'?'+Number(new Date())}" @close="handleClose"></vue-preview>
+
+
                         <!-- <img :src="pd.images" height="100px" v-viewer> -->
                     
                     </v-flex>
@@ -172,126 +176,92 @@
   </v-app>
 </template>
 <script>
-import "viewerjs/dist/viewer.css";
-import { Carousel, Slide } from "vue-carousel";
-import QuotationList from "./QuotationList";
-import QuotationDialog from "./QuotationDialog";
-import DestinationUser from "./DestinationUser";
-import DestinationPurchase from "./DestinationPurchase";
+import QuotationList from './QuotationList'
+import QuotationDialog from './QuotationDialog'
+import DestinationUser from './DestinationUser'
+import DestinationPurchase from './DestinationPurchase'
 
 export default {
   components: {
-    Carousel,
-    Slide,
     QuotationList,
     QuotationDialog,
     DestinationUser,
     DestinationPurchase
   },
 
-  metaInfo() {
-    return this.metaInfo;
-  },
-  data() {
+  data () {
     return {
-      metaInfo: {
-        title: "",
-        meta: []
-      },
       dialog: false,
       refuseFlag: false,
       timeDialog: false,
       opQuotationOrder: {},
       // avatarRoot:avatarRoot,
-      item: { id: "" },
       quotationOrders: [],
       quotationOrder: {
         products: [],
         charge: 0
       }
-    };
+    }
   },
   methods: {
-    getDetail(id) {
-      this.$http
-        .get("/purchase", { id: this.$route.params.id })
-        .then(res => {
-          if (res.data.Status) {
-            this.item = res.data.Data;
-            this.quotationOrder.products = JSON.parse(
-              JSON.stringify(this.item.products)
-            );
-            // 处理metainfo
-            var productNames = new Array();
-            this.item.products.forEach(elt => {
-              productNames.push(elt.name);
-            });
-
-            this.metaInfo.title = item.destination + "代购" + productNames;
-          }
-        })
-        .catch(res => {});
-    },
-    goPurchase() {
+    goPurchase () {
       if (this.$store.state.auth.token) {
-        this.dialog = true;
+        this.dialog = true
       } else {
-        this.$store.commit("INFO", "请先登录后再代购哦");
+        this.$store.commit('INFO', '请先登录后再代购哦')
         this.$router.replace({
-          name: "login",
+          name: 'login',
           query: { redirect: this.$router.currentRoute.fullPath }
-        });
+        })
       }
     },
-    closeDialog(data) {
-      this.dialog = false;
+    closeDialog (data) {
+      this.dialog = false
     },
-    updateOrders(data, index) {
+    updateOrders (data, index) {
       if (index) {
-        this.item.quotationOrders[index] = data;
+        this.item.quotationOrders[index] = data
       } else {
-        this.item.quotationOrders.push(data);
+        this.item.quotationOrders.push(data)
       }
     },
-    purchase(quotation) {
-      console.log("purchase quotation", quotation);
+    purchase (quotation) {
     }
   },
   computed: {
-    purchaseFlag: function() {
-      var flag = true;
+    purchaseFlag: function () {
+      var flag = true
       if (this.item.createBy == this.$store.state.User.user.id) {
-        flag = false;
+        flag = false
       }
-      this.item.quotationOrders &&
-        this.item.quotationOrders.forEach(pd => {
-          if (pd.createBy == this.$store.state.User.user.id) {
-            flag = false;
-          }
-        });
-      return flag;
+
+      this.item.quotationOrders.forEach(pd => {
+        if (pd.createBy == this.$store.state.User.user.id) {
+          flag = false
+        }
+      })
+      return flag
     }
   },
-  created() {
-    if (!this.$route.params.item) {
-      this.getDetail(this.$route.params.id);
-    } else {
-      this.item = this.$route.params.item;
-      this.quotationOrder.products = JSON.parse(
-        JSON.stringify(this.item.products)
-      );
+  asyncData (context) {
+    var item = {}
+    return context.$http.get('/purchase', { id: context.params.id }).then(res => {
+      if (res.data.Status) {
+        item = res.data.Data
+        var productNames = new Array()
+        item.products.forEach(element => {
+          productNames.push(element.name)
+        })
 
-      // 处理metainfo
-      var productNames = new Array();
-      this.item.products.forEach(elt => {
-        productNames.push(elt.name);
-      });
+        context.app.head.title = item.destination + '代购' + productNames
+        return {item: item}
+      }
+    }).catch(res => {
+      context.error({statusCode: 401, message: res})
+    })
+  }
 
-      this.metaInfo.title = this.item.destination + "代购" + productNames;
-    }
-  },
-  watch: {}
-};
+}
 </script>
 <style scoped>
 /* .img-detail{

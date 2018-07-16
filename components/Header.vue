@@ -18,7 +18,7 @@
 
             <v-tab to="/" large flat=""  @click="currentMod(0)">
               <v-icon small>fa-sun</v-icon>爆料填坑</v-tab>
-            <v-tab to="/logispurch" @click="currentMod(1)">
+            <v-tab to="/purchases" @click="currentMod(1)">
               <v-icon small >fa-shopping-cart</v-icon>物流代购</v-tab>
             <v-tab disabled>
               <v-icon small>fa-exchange-alt</v-icon>转卖</v-tab>
@@ -103,18 +103,17 @@
 
 </template>
 <script>
-import { mapGetters, mapState } from "vuex";
-import { avatarRoot } from "@/config";
-
+import { mapGetters, mapState } from 'vuex'
+import { avatarRoot } from '@/config'
 export default {
-  data() {
+  data () {
     return {
       url: avatarRoot,
       drawer: true,
       show: true,
       active: 2,
       newMsg: 0
-    };
+    }
   },
   computed: {
     ...mapState({
@@ -122,49 +121,44 @@ export default {
     })
   },
   methods: {
-    loginOut() {
-      this.$store.commit("LOGOUT");
-      this.$router.push("/");
+    loginOut () {
+      this.$store.commit('LOGOUT')
+      this.$router.push('/')
     },
-    home() {
-      this.$router.push("/");
+    home () {
+      this.$router.push('/')
     },
-    currentMod(index) {
-      this.$store.commit("ACTIVE_HEADER", index);
+    currentMod (index) {
+      this.$store.commit('ACTIVE_HEADER', index)
     }
   },
-  created() {
-    console.log(
-      "this.$store.state.auth.token && !this.$store.state.User.user.id",
-      this.$store.state.auth.token && !this.$store.state.User.user.id
-    );
+  created () {
     if (this.$store.state.auth.token && !this.$store.state.User.user.id) {
-      this.$store.dispatch("getUserInfo", { type: "profile" }).then(res => {
+      this.$http.get('/user/info', { type: 'profile' }).then(res => {
         // 初始化用户基本信息
         if (res.data.Status) {
-          this.user = res.data.Data;
-          this.$store.commit("GET_USER_PROFILE_SUCCESS", res.data.Data);
+          this.user = res.data.Data
+          this.$store.commit('GET_USER_PROFILE_SUCCESS', res.data.Data)
         } else {
-          this.$store.commit("ERROR", res.data.Error.Err);
+          this.$store.commit('ERROR', res.data.Error.Err)
         }
-      });
+      })
     }
   },
-  mounted() {
+  mounted () {
     if (this.$store.state.auth.token) {
-      this.$http
-        .get("/user/msg/news", {})
+      this.$http.get('/user/msg/news', {})
         .then(res => {
           if (res.data.Status) {
-            this.newMsg = res.data.Data;
+            this.newMsg = res.data.Data
           }
         })
         .catch(res => {
-          this.$store.commit("ERROR", res.data);
-        });
+          this.$store.commit('ERROR', res.data)
+        })
     }
   }
-};
+}
 </script>
 
 <style scoped>

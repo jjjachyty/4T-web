@@ -1,5 +1,4 @@
 import * as types from './mutation-types'
-
 export const state = {
   // apiRoot: 'http://106.12.10.77:9090',
   // avatarRoot: 'http://pa7c4jxbs.bkt.clouddn.com/',

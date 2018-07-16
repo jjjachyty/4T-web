@@ -32,90 +32,90 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from "vuex";
-import { validationMixin } from "vuelidate";
+import { mapActions, mapGetters } from 'vuex'
+import { validationMixin } from 'vuelidate'
 import {
   required,
   sameAs,
   minLength,
   maxLength,
   phone
-} from "vuelidate/lib/validators";
+} from 'vuelidate/lib/validators'
 
 export default {
-  layout: "noheader",
+  layout: 'noheader',
   mixins: [validationMixin],
   validations: {
     user: {
       password: {
         required,
-        passRule(v) {
-          return /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,16}$/.test(v);
+        passRule (v) {
+          return /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,16}$/.test(v)
         }
       },
       username: {
         required,
-        phoneRule(v) {
-          return /^[1][3,4,5,7,8][0-9]{9}$/.test(v);
+        phoneRule (v) {
+          return /^[1][3,4,5,7,8][0-9]{9}$/.test(v)
         }
       }
     }
   },
-  data() {
+  data () {
     return {
       valid: false,
-      user: { username: "", password: "" }
-    };
+      user: { username: '', password: '' }
+    }
   },
   computed: {
-    phoneErrors() {
-      const errors = [];
-      if (!this.$v.user.username.$dirty) return errors;
-      !this.$v.user.username.phoneRule && errors.push("手机号格式不正确");
-      !this.$v.user.username.required && errors.push("手机号不能为空");
-      return errors;
+    phoneErrors () {
+      const errors = []
+      if (!this.$v.user.username.$dirty) return errors
+      !this.$v.user.username.phoneRule && errors.push('手机号格式不正确')
+      !this.$v.user.username.required && errors.push('手机号不能为空')
+      return errors
     },
-    passwdErrors() {
-      const errors = [];
-      if (!this.$v.user.password.$dirty) return errors;
+    passwdErrors () {
+      const errors = []
+      if (!this.$v.user.password.$dirty) return errors
       !this.$v.user.password.passRule &&
-        errors.push("需大于8位包含大小写字母和数字不包含特殊字符");
-      !this.$v.user.password.required && errors.push("密码不能为空");
-      return errors;
+        errors.push('需大于8位包含大小写字母和数字不包含特殊字符')
+      !this.$v.user.password.required && errors.push('密码不能为空')
+      return errors
     }
   },
   methods: {
-    async submit() {
-      this.$v.$touch();
+    async submit () {
+      this.$v.$touch()
       if (!this.$v.$invalid) {
-        this.$http.post("/login", this.user).then(res => {
-          console.log("login-res------", res);
+        this.$http.post('/login', this.user).then(res => {
+          console.log('login-res------', res)
           if (res.data.Error) {
-            console.log("res----", res.data.Error);
-            this.$store.commit("ERROR", res.data.Error.Err);
+            console.log('res----', res.data.Error)
+            this.$store.commit('ERROR', res.data.Error.Err)
           } else {
-            this.$store.commit("LOGIN_SUCCESS", res.data); // 登陆成功
+            this.$store.commit('LOGIN_SUCCESS', res.data) // 登陆成功
 
             this.$store
-              .dispatch("getUserInfo", { type: "profile" })
+              .dispatch('getUserInfo', { type: 'profile' })
               .then(res => {
                 // 初始化用户基本信息
                 if (res.data.Status) {
-                  this.user = res.data.Data;
-                  this.$store.commit("GET_USER_PROFILE_SUCCESS", res.data.Data);
-                  var path = this.$route.query.redirect || "/";
-                  this.$router.push(path);
+                  this.user = res.data.Data
+                  this.$store.commit('GET_USER_PROFILE_SUCCESS', res.data.Data)
+                  var path = this.$route.query.redirect || '/'
+                  this.$router.push(path)
                 } else {
-                  this.$store.commit("ERROR", res.data.Error.Err);
+                  this.$store.commit('ERROR', res.data.Error.Err)
                 }
-              });
+              })
           }
-        });
+        })
       }
     }
   },
-  created() {}
-};
+  created () {}
+}
 </script>
 <style scoped>
 #login {

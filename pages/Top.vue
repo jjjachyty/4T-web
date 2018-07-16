@@ -22,19 +22,18 @@
 
 <script>
 export default {
-  data() {
+  data () {
     return {
       items: [],
       date: null
-    };
+    }
   },
-  mounted() {
-    this.$http
-      .get("/topexparticles", { sort: "-thumbsUps", limit: 10 })
+  mounted () {
+    this.$http.get('/topexparticles', { sort: '-thumbsUps', limit: 10 })
       .then(res => {
-        this.items = res.data.Data;
-      });
-    this.date = this.formatDate(new Date(), "YYYYMM");
+        this.items = res.data.Data
+      })
+    this.date = this.formatDate(new Date(), 'YYYYMM')
   }
-};
+}
 </script>

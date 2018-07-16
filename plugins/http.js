@@ -17,7 +17,6 @@ export default (context) => {
   // http request 拦截器
   axios.interceptors.request.use(
     config => {
-      console.log('context.store', context.store)
       if (context.store.state.auth.token !== '') {
         config.headers.Authorization = `Bearer ${context.store.state.auth.token}`
       }
@@ -129,6 +128,7 @@ export default (context) => {
     }
   }
   context.$http = $http
+
   Vue.prototype.$http = $http
-  Vue.use($http)
+  // Vue.use(vue$http)
 }
