@@ -5,6 +5,8 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 /** cust modules */
 import User from './modules/user'
+import Article from './modules/article'
+import Purchase from './modules/purchase'
 
 import actions from './actions'
 import * as getters from './getters'
@@ -24,7 +26,9 @@ const store = () => new Vuex.Store({
 
   modules: {
     /** cust modules */
-    User
+    User,
+    Article,
+    Purchase
 
   },
   // strict: debug,

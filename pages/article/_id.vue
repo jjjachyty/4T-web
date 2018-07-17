@@ -34,7 +34,9 @@
             </v-card-title>
             <v-card-text>
                 <div id="editor">
-                    <mavon-editor :editable="false" :toolbarsFlag="false" defaultOpen="preview" :subfield="false" v-model="article.content" ref=md></mavon-editor>
+                    <!-- <mavon-editor :editable="false" :toolbarsFlag="false" defaultOpen="preview" :subfield="false" v-model="article.content" ref=md></mavon-editor> -->
+                <vue-showdown >{{ article.content }}</vue-showdown>
+
                 </div>
 
             </v-card-text>
@@ -256,30 +258,27 @@
 </template>
 
 <script>
-import Ads from '@/pages/Ads'
-import {
-  avatarRoot,
-  apiRoot
-} from '@/config'
+import Ads from "@/pages/Ads";
+import { avatarRoot, apiRoot } from "@/config";
 export default {
   components: {
     Ads
   },
-  metaInfo () {
+  metaInfo() {
     return {
       title: this.article.title,
       meta: this.meta
-    }
+    };
   },
-  data () {
+  data() {
     return {
       meta: [],
       more: true,
       url: avatarRoot,
       tipOffFlag: false,
       tipOff: {
-        category: '1',
-        content: ''
+        category: "1",
+        content: ""
       },
       to: {},
       reply: false,
@@ -289,159 +288,163 @@ export default {
 
       commentThumbup: {},
       newComment: {
-        content: '',
+        content: "",
         anonymous: true
       },
       hotcomments: [],
       comments: [],
       thumbups: [],
-      items: [{
-        id: '1',
-        avatar: '/batman.png',
-        content: 'xasasas'
-      }],
-      shares: [{
-        title: '微信',
-        icon: 'fa-weixin'
-      }]
-    }
+      items: [
+        {
+          id: "1",
+          avatar: "/batman.png",
+          content: "xasasas"
+        }
+      ],
+      shares: [
+        {
+          title: "微信",
+          icon: "fa-weixin"
+        }
+      ]
+    };
   },
   methods: {
-    addComment (type) {
-      var paramsData = this.newComment
-      if (type == '2') {
-        paramsData = this.to
+    addComment(type) {
+      var paramsData = this.newComment;
+      if (type == "2") {
+        paramsData = this.to;
       }
 
       if (
         paramsData.content &&
-                paramsData.content.length > 10 &&
-                paramsData.content.length < 140
+        paramsData.content.length > 10 &&
+        paramsData.content.length < 140
       ) {
-        paramsData.articleID = this.article.id
-        paramsData.type = type
-        paramsData.anNickName = this.$store.state.User.user.anNickName
-        this.$http.post('/user/comment', paramsData).then(res => {
+        paramsData.articleID = this.article.id;
+        paramsData.type = type;
+        paramsData.anNickName = this.$store.state.User.user.anNickName;
+        this.$http.post("/user/comment", paramsData).then(res => {
           if (res.data.Status) {
-            this.comments.unshift(res.data.Data)
-            if (type == '1') {
-              this.article.comments++
+            this.comments.unshift(res.data.Data);
+            if (type == "1") {
+              this.article.comments++;
             } else {
-              this.comments[this.replyIndex].comment++
-              var ref = this.comments[this.replyIndex + 1]
+              this.comments[this.replyIndex].comment++;
+              var ref = this.comments[this.replyIndex + 1];
               this.comments[0].reply = {
                 userID: ref.By,
                 content: ref.content,
                 anNickName: ref.anNickName,
                 anonymous: ref.anonymous
-              }
-              this.reply = false
+              };
+              this.reply = false;
             }
             this.newComment = {
               anonymous: true
-            }
+            };
           } else {
-            this.$store.commit('ERROR', res.data.Error.Err)
+            this.$store.commit("ERROR", res.data.Error.Err);
           }
-        })
+        });
       } else {
-        this.$store.commit('INFO', '评论内容在10～140个字之间')
+        this.$store.commit("INFO", "评论内容在10～140个字之间");
       }
     },
-    thumbup (type, index) {
+    thumbup(type, index) {
       var params = {
         type: type,
         articleID: this.article.id
+      };
+      if (type == "2") {
+        params.commentID = this.comments[index].id;
       }
-      if (type == '2') {
-        params.commentID = this.comments[index].id
-      }
-      this.$http.post('/user/thumbup', params).then(res => {
+      this.$http.post("/user/thumbup", params).then(res => {
         if (res.data.Status) {
-          this.$store.commit('SUCCESS', '点赞成功')
-          if (type == '1') {
-            this.article.thumbsUps += 1
-            this.thumbupFlag = false
+          this.$store.commit("SUCCESS", "点赞成功");
+          if (type == "1") {
+            this.article.thumbsUps += 1;
+            this.thumbupFlag = false;
           } else {
-            console.log('index', index)
-            this.comments[index].thumbsUps += 1
-            this.commentThumbup[this.comments[index].id] = true
+            console.log("index", index);
+            this.comments[index].thumbsUps += 1;
+            this.commentThumbup[this.comments[index].id] = true;
           }
         } else {
-          this.$store.commit('ERROR', res.data.Error.Err)
+          this.$store.commit("ERROR", res.data.Error.Err);
         }
-      })
+      });
     },
-    showReply (index) {
-      var item = this.comments[index]
-      this.replyIndex = index
+    showReply(index) {
+      var item = this.comments[index];
+      this.replyIndex = index;
       if (this.$store.state.auth.token) {
         this.to = {
           replyCommentID: item.id,
           to: item.by,
           anonymous: true
-        }
-        this.reply = true
+        };
+        this.reply = true;
       } else {
-        this.$store.commit('INFO', '登陆后才能回复')
+        this.$store.commit("INFO", "登陆后才能回复");
 
         this.$router.replace({
-          name: 'login',
+          name: "login",
           query: {
             redirect: this.$router.currentRoute.fullPath
           }
-        })
+        });
       }
     },
-    showTipOff (commentid) {
+    showTipOff(commentid) {
       if (this.$store.state.auth.token) {
-        this.tipOffFlag = true
-        this.tipOff.articleID = this.article.id
-        this.tipOff.commintID = commentid
+        this.tipOffFlag = true;
+        this.tipOff.articleID = this.article.id;
+        this.tipOff.commintID = commentid;
       } else {
-        this.$store.commit('INFO', '登陆后才能回复')
+        this.$store.commit("INFO", "登陆后才能回复");
 
         this.$router.replace({
-          name: 'login',
+          name: "login",
           query: {
             redirect: this.$router.currentRoute.fullPath
           }
-        })
+        });
       }
     },
-    addTipoffs () {
+    addTipoffs() {
       if (
         this.tipOff &&
-                this.tipOff.content.length > 10 &&
-                this.tipOff.content.length < 140
+        this.tipOff.content.length > 10 &&
+        this.tipOff.content.length < 140
       ) {
         this.$http
-          .post('/user/tipoffs', this.tipOff)
+          .post("/user/tipoffs", this.tipOff)
           .then(res => {
             if (res.data.Status) {
-              this.tipOffFlag = false
+              this.tipOffFlag = false;
               this.$store.commit(
-                'SUCCESS',
-                '感谢您的举报，我们会在第一时间处理'
-              )
+                "SUCCESS",
+                "感谢您的举报，我们会在第一时间处理"
+              );
             }
           })
           .catch(res => {
-            console.log('res', res)
-          })
+            console.log("res", res);
+          });
       } else {
-        this.$store.commit('INFO', '举报内容在10～140个字之间')
+        this.$store.commit("INFO", "举报内容在10～140个字之间");
       }
     },
-    loadmore () {
+    loadmore() {
       console.log(
-        'this.comments[this.comments.length-1].id',
+        "this.comments[this.comments.length-1].id",
         this.comments.length - 1,
         this.comments[this.comments.length - 1].id
-      )
+      );
       // 获取评论
       this.$http
-        .get('/newcomments', {
+        .get("/newcomments", {
           articleID: this.article.id,
           lastID: this.comments[this.comments.length - 1].id
         })
@@ -449,156 +452,159 @@ export default {
           if (res.data.Status) {
             if (res.data.Data.length < 10) {
               // 小于10个就没有加载更多按钮
-              this.more = false
+              this.more = false;
             }
 
             res.data.Data.forEach(item => {
-              this.comments.push(item)
-            })
+              this.comments.push(item);
+            });
           } else {
-            this.$store.commit('ERROR', '获取更多最新评论失败')
+            this.$store.commit("ERROR", "获取更多最新评论失败");
           }
-        })
+        });
     }
   },
 
-  mounted () {
-    var id = this.$route.params.id
-    var url =
-            this.$route.name == 'userarticle' ? '/user/article/' : '/article/'
-    if (this.$store.state.auth.token != '') {
+  created() {
+    if (this.$store.state.auth.token != "") {
       // 获取我的点赞
       this.$http
-        .get('/thumbups', {
+        .get("/thumbups", {
           articleID: id
         })
         .then(res => {
           if (res.data.Status) {
-            this.thumbups = res.data.Data
+            this.thumbups = res.data.Data;
             res.data.Data.forEach(item => {
-              console.log('item', item)
-              if (item.type == '1') {
-                this.thumbupFlag = false
+              console.log("item", item);
+              if (item.type == "1") {
+                this.thumbupFlag = false;
               } else {
-                this.commentThumbup[item.commentID] = true
+                this.commentThumbup[item.commentID] = true;
               }
-            })
+            });
           } else {
-            this.$store.commit('ERROR', '获取点赞失败')
+            this.$store.commit("ERROR", "获取点赞失败");
           }
-        })
+        });
     }
 
     // 获取评论
     this.$http
-      .get('/newcomments', {
+      .get("/newcomments", {
         articleID: id
       })
       .then(res => {
         if (res.data.Status) {
-          this.comments = res.data.Data
+          this.comments = res.data.Data;
           if (res.data.Data.length < 10) {
             // 小于10个就没有加载更多按钮
-            this.more = false
+            this.more = false;
           }
         } else {
-          this.$store.commit('ERROR', '获取最新评论失败')
+          this.$store.commit("ERROR", "获取最新评论失败");
         }
-      })
+      });
 
     // 获取评论
     this.$http
-      .get('/hotcomments', {
+      .get("/hotcomments", {
         articleID: id
       })
       .then(res => {
         if (res.data.Status) {
-          this.hotcomments = res.data.Data
+          this.hotcomments = res.data.Data;
         } else {
-          this.$store.commit('ERROR', '获取热论失败')
+          this.$store.commit("ERROR", "获取热论失败");
+        }
+      });
+  },
+  asyncData(context) {
+    var id = context.params.id;
+    // var url = context.route.name === 'article-id' ? '/user/article/' : '/article/'
+    var article = {};
+    return context.$http
+      .get("/article/" + id, {})
+      .then(res => {
+        if (res.data.Status) {
+          article = res.data.Data;
+          context.app.head.meta.push({
+            name: "keyWords",
+            content: article.location
+          });
+          context.app.head.meta.push({
+            name: "keyWords",
+            content: article.domain
+          });
+          context.app.head.meta.push({
+            name: "keyWords",
+            content: article.tags
+          });
+          context.app.head.meta.push({
+            name: "description",
+            content: article.title
+          });
+          context.app.head.title = article.title;
+          return { article: article };
+        } else {
+          context.store.commit("ERROR", res.data.Error.Err);
+          context.redirect("302", "/", {});
         }
       })
-  },
-  asyncData (context) {
-    var id = context.params.id
-    // var url = context.route.name === 'article-id' ? '/user/article/' : '/article/'
-    var article = {}
-    return context.$http.get('/article/' + id, {}).then(res => {
-      if (res.data.Status) {
-        article = res.data.Data
-        context.app.head.meta.push({
-          name: 'keyWords',
-          content: article.location
-        })
-        context.app.head.meta.push({
-          name: 'keyWords',
-          content: article.domain
-        })
-        context.app.head.meta.push({
-          name: 'keyWords',
-          content: article.tags
-        })
-        context.app.head.meta.push({
-          name: 'description',
-          content: article.title
-        })
-        context.app.head.title = article.title
-        return {article: article}
-      } else {
-        context.store.commit('ERROR', res.data.Error.Err)
-        context.redirect('302', '/', {})
-      }
-    }).catch(res => {
-      console.log('xxxxxxxxxxresresresresresxx', res)
-      context.error({statusCode: 401, message: res.data})
-    })
+      .catch(res => {
+        console.log("xxxxxxxxxxresresresresresxx", res);
+        context.error({ statusCode: 401, message: res.data });
+      });
   }
-}
+};
 </script>
 
 <style scoped>
 .ads {
-    height: 100px;
+  height: 100px;
 }
 
 .ads .ads-text {
-    margin-top: 100px;
+  margin-top: 100px;
 }
 
 .avatar-auth {
-    margin-left: 40%;
-    margin-top: -30px;
+  margin-left: 40%;
+  margin-top: -30px;
 }
 
 #editor {
-    margin: auto;
-    width: 100%;
-    /* height: 300px; */
+  margin: auto;
+  width: 100%;
+  /* height: 300px; */
 }
 
 .v-note-wrapper {
-    position: relative;
-    min-width: 200px;
-    min-height: 300px;
-    display: -webkit-box;
-    display: -webkit-flex;
-    display: -ms-flexbox;
-    display: flex;
-    width: 100%;
-    -webkit-box-orient: vertical;
-    -webkit-box-direction: normal;
-    -webkit-flex-direction: column;
-    -ms-flex-direction: column;
-    flex-direction: column;
-    -webkit-transition: all 0.3s linear 0s;
-    transition: all 0.3s linear 0s;
-    background: #fff;
-    z-index: 1 !important;
-    text-align: left;
+  position: relative;
+  min-width: 200px;
+  min-height: 300px;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  width: 100%;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -webkit-flex-direction: column;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  -webkit-transition: all 0.3s linear 0s;
+  transition: all 0.3s linear 0s;
+  background: #fff;
+  z-index: 1 !important;
+  text-align: left;
 }
-
-</style><style>.comment-content {
-    display: block;
-    word-wrap: break-word;
+</style><style>
+.comment-content {
+  display: block;
+  word-wrap: break-word;
+}
+img {
+  max-width: 100%;
 }
 </style>

@@ -1,10 +1,6 @@
 <template>
   <div class="" >
-    <v-layout>
-      <v-flex offset-md3 md5>
-        <v-text-field  prepend-inner-icon="search" @click:clear="clear" @keyup.enter="serach" v-model="keyWords" solo clearable placeholder="搜索 例：IPhonex 香港"></v-text-field>
-      </v-flex>
-    </v-layout>
+
 
     <!-- <p class="text-xs-right">
        <v-btn-toggle v-model="purchType" >
@@ -83,49 +79,32 @@
   </div>
 </template>
 <script>
-import { Carousel, Slide } from 'vue-carousel'
-import { avatarRoot } from '~/config'
+import { Carousel, Slide } from "vue-carousel";
+import { avatarRoot } from "~/config";
 
 export default {
   components: {
     Carousel,
     Slide
   },
-  props: ['items'],
-  data () {
+  props: ["items"],
+  data() {
     return {
       purchType: 0,
-      keyWords: '',
+      keyWords: "",
       filter: false,
       filters: {},
       avatarRoot: avatarRoot
-    }
+    };
   },
   methods: {
-    toDetail (item) {
-      this.$router.push('/purchase/' + item.id)
-    },
-    serach () {
-      this.query({ keyWords: this.keyWords })
-    },
-    clear () {
-      this.keyWords = null
-      this.query()
-    },
-    query (params) {
-      this.$http.get('/purchases', params).then(res => {
-        if (res.data.Status) {
-          this.items = res.data.Data
-        }
-      })
+    toDetail(item) {
+      this.$router.push("/purchase/" + item.id);
     }
   }
-}
+};
 </script>
 <style scoped>
-.serach {
-  max-width: 500px;
-}
 .img-herder img {
   height: 150px;
   width: 100%;

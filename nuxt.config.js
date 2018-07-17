@@ -31,7 +31,13 @@ module.exports = {
     }
     ]
   },
-  plugins: ['~/plugins/vuetify.js', '~/plugins/common.js', '~/plugins/mixins.js', '~/plugins/filter.js', {
+  plugins: ['~/plugins/vuetify.js', {
+    src: '~/plugins/nossr.js',
+    ssr: false
+  }, {
+    src: '~/plugins/ssr.js',
+    ssr: true
+  }, '~/plugins/mixins.js', '~/plugins/filter.js', {
     src: '~/plugins/localStorage.js',
     ssr: false
   }, {
