@@ -14,7 +14,7 @@
     </v-app>
 </template>
 <script>
-import List from "./purchaselist";
+import List from "./purchaseList";
 
 export default {
   components: {
