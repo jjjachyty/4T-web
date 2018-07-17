@@ -93,7 +93,7 @@ export default {
 
 <style>
 .main {
-  margin-top: 80px;
+  margin-top: 120px;
 }
 .juanzen {
   height: 100px;

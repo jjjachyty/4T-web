@@ -16,7 +16,7 @@
                             <v-flex xs2><small class="caption red--text font-weight-black">{{order.state | dict('orderState')}}</small></v-flex> 
                             </v-layout>
                         </v-flex>
-<router-link :to="order.originalLink" class="grey lighten-5">
+<!-- <router-link :to="order.originalLink" class="grey lighten-5"> -->
                         <v-flex xs12>
 <v-divider></v-divider>
                             <v-card-text>
@@ -39,7 +39,7 @@
                             </v-layout>
                             </v-card-text>
                         </v-flex>
-</router-link>
+<!-- </router-link> -->
                         <v-flex xs12>
                             <v-divider></v-divider>
                             <v-card-actions>

@@ -24,7 +24,12 @@ import {
   VRadioGroup,
   VDialog,
   VSwitch,
-  VSnackbar
+  VSnackbar,
+  VAutocomplete,
+  VCombobox,
+  VDatePicker,
+  VTimePicker,
+  VExpansionPanel
 } from 'vuetify'
 
 Vue.use(Vuetify, {
@@ -52,7 +57,12 @@ Vue.use(Vuetify, {
     VRadioGroup,
     VDialog,
     VSwitch,
-    VSnackbar
+    VSnackbar,
+    VAutocomplete,
+    VCombobox,
+    VDatePicker,
+    VTimePicker,
+    VExpansionPanel
   },
   theme: {
     primary: '#009688',

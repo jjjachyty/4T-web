@@ -99,7 +99,7 @@ export default {
             this.disable = true
             this.$store.state.auth = {}
             setTimeout(() => {
-              this.$router.push('login')
+              this.$router.push('/login')
             }, 1000)
           } else {
             this.$store.commit('ERROR', res.data.Error.Err)

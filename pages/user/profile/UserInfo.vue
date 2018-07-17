@@ -89,7 +89,7 @@
 
 </template>
 <script>
-import { mapActions } from "vuex"
+import { mapActions } from 'vuex'
 export default {
   props: ['user'],
   data () {
@@ -239,19 +239,19 @@ export default {
             nickName: this.user.nickName,
             address: this.user.address
           }
-          this.update(baseInfo)
+          this.$http.put('/user/info', baseInfo)
             .then(res => {
-              this.$store.commit('SUCCESS', "设置用户基本信息成功")
+              this.$store.commit('SUCCESS', '设置用户基本信息成功')
               this.$store.commit('REFRESH_USER', baseInfo)
             })
             .catch(res => {
-              this.$store.commit('ERROR', res);
+              this.$store.commit('ERROR', res)
             })
         }
       })
     },
     onFileSizeExceed () {
-      this.$store.commit('INFO', "图片文件过大,大于1M")
+      this.$store.commit('INFO', '图片文件过大,大于1M')
     },
     onInit () {
       this.croppa.addClipPlugin(function (ctx, x, y, w, h) {
@@ -265,7 +265,7 @@ export default {
         console.log(x, y, w, h)
         ctx.beginPath()
         ctx.arc(x + w / 2, y + h / 2, w / 2, 0, 2 * Math.PI, true)
-        ctx.closePath();
+        ctx.closePath()
       })
     },
     handleNewImage () {
@@ -287,7 +287,7 @@ export default {
               console.log('qntoken', res.data.Data)
               if (res.data.Status) {
                 var uploadToken = res.data.Data
-                var pic = this.croppa.generateDataUrl("image/png")
+                var pic = this.croppa.generateDataUrl('image/png')
                 this.$store
                   .dispatch('uploadImages', {
                     uploadToken: uploadToken,
@@ -298,7 +298,7 @@ export default {
                     resolve()
                   })
                   .catch(res => {
-                    reject();
+                    reject()
                   })
               } else {
                 this.$store.commit(
@@ -312,7 +312,7 @@ export default {
             resolve()
           }
         } else {
-          this.$store.commit('INFO', "请上传自定义头像")
+          this.$store.commit('INFO', '请上传自定义头像')
           reject()
         }
       })

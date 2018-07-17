@@ -16,15 +16,15 @@
                         </v-flex>
                                                 <router-link :to="order.originalLink" class="grey lighten-5">
 
-                        <v-flex xs12>
+                        <v-flex xs12 md12>
                             <v-card-text>
                             <v-layout row v-for="pd in order.products" :key="pd.id">
-                        <v-flex xs2>
+                        <v-flex xs2 md2>
                             <v-card-media height="70">
                                 <img :src="purchaseRoot+pd.images" >
                             </v-card-media>
                         </v-flex>
-                        <v-flex xs10>
+                        <v-flex xs10 md10>
                             <v-layout row wrap class="caption grey--text" align-center justify-center>
                                 <v-flex xs10>名称：{{pd.name}}</v-flex>
                                 <v-flex xs2><span>数量:{{pd.quantity}}</span></v-flex>

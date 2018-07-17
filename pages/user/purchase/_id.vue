@@ -21,7 +21,7 @@
                   <template slot="selection" slot-scope="data">
                     <!-- <v-chip :selected="data.selected.name" :key="JSON.stringify(data.item.name)" class="chip--select-multi" @input="data.parent.selectItem(data.item)"> -->
                       <v-avatar size="30">
-                <img :src="'/static/country/'+data.item.id+'.png'">
+                <img :src="'/country/'+data.item.id+'.png'">
               </v-avatar>
                       {{ data.item.name }}
                     <!-- </v-chip> -->
@@ -33,7 +33,7 @@
                     
                     <template>
                       <v-list-tile-avatar>
-                        <img :src="'/static/country/'+data.item.id+'.png'">
+                        <img :src="'/country/'+data.item.id+'.png'">
                       </v-list-tile-avatar>
                       <v-list-tile-content>
                         <v-list-tile-title v-html="data.item.name"></v-list-tile-title>

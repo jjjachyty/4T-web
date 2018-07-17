@@ -1,7 +1,7 @@
 <template>
     <v-app>
         <v-dialog v-model="dialog" persistent max-width="500px">
-      <v-btn slot="activator" color="primary" dark small flat outline>新增</v-btn>
+      <v-btn slot="activator" color="primary" dark small flat outline @click="add">新增</v-btn>
       <v-card>
         <v-card-title>
           <span class="headline">我的旅程</span>
@@ -26,7 +26,7 @@
                   <template slot="selection" slot-scope="data">
                     <!-- <v-chip :selected="data.selected.name" :key="JSON.stringify(data.item.name)" class="chip--select-multi" @input="data.parent.selectItem(data.item)"> -->
                       <v-avatar size="30">
-                <img :src="'/static/country/'+data.item.id+'.png'">
+                <img :src="'/country/'+data.item.id+'.png'">
               </v-avatar>
                       {{ data.item.name }}
                     <!-- </v-chip> -->
@@ -38,7 +38,7 @@
                     
                     <template>
                       <v-list-tile-avatar>
-                        <img :src="'/static/country/'+data.item.id+'.png'">
+                        <img :src="'/country/'+data.item.id+'.png'">
                       </v-list-tile-avatar>
                       <v-list-tile-content>
                         <v-list-tile-title v-html="data.item.name"></v-list-tile-title>
@@ -110,7 +110,7 @@
       </v-dialog>
               </v-flex>
               <v-flex xs12>
-                       <v-select
+                       <v-combobox
           v-model="journey.products"
           :items="productsArray"
           label="可代购商品(可自定义)"
@@ -118,6 +118,7 @@
           prepend-icon="bookmarks"
           chips
           tags
+          multiple
         >
           <template slot="selection" slot-scope="data">
             <v-chip
@@ -138,7 +139,7 @@
             <v-icon left>label</v-icon>Tags
             </v-chip> -->
           </template>
-        </v-select>
+        </v-combobox>
               </v-flex>
 
               <!-- <v-flex xs12 sm6>
@@ -172,14 +173,15 @@
         <br>
         <!-- <v-content> -->
         <span v-if="journeys.length<1" class="caption grey--text">新增告诉我,打算去哪儿呢</span>
-        <v-card v-else v-for="(j,index) in journeys" :key="j.id" v-bind:class="{'grey--text': '0'==j.state}">
+        <div v-else v-for="(j,index) in journeys" :key="j.id">
+        <v-card  v-bind:class="{'grey--text': '0'==j.state}">
         <br>
            <v-layout row>
                <v-flex md2 xs2>
                    <v-layout row wrap class="text-xs-center">
                        <v-flex xs12>
                             <v-avatar>
-                           <img :src="'/static/country/'+ locationID(j.destination)+'.png'">
+                           <img :src="'/country/'+ locationID(j.destination)+'.png'">
                            </v-avatar>
                        </v-flex>
                        <v-flex xs12>{{j.destination}}</v-flex>
@@ -211,7 +213,9 @@
                <v-btn color="secondary"  small outline @click="showRemove(index)">删除</v-btn>
            </v-card-actions>
         </v-card>
-        
+        <v-divider></v-divider>
+        <br>
+        </div>
   <v-dialog v-model="removeDialog" persistent max-width="290">
       <v-card>
         <v-card-title class="headline">确定删除?</v-card-title>
@@ -243,8 +247,9 @@ export default {
     }
   },
   methods: {
-    addJourney () {
-      this.$router.push('/user/journey')
+    add () {
+      this.journey = {}
+      this.dialog = true
     },
 
     edit (index) {
@@ -274,16 +279,17 @@ export default {
         if (this.journey.id) {
           this.$http.put('/user/journey', this.journey).then(res => {
             if (res.data.Status) {
-              this.$store.commit('SUCCESS', '保存成功')
+              this.$store.commit('SUCCESS', '更新成功')
               this.journeys[this.editIndex] = this.journey
               this.dialog = false
+              console.log('this.journeys[this.editIndex]', this.journeys[this.editIndex])
             }
           })
         } else { // 新增
           this.$http.post('/user/journey', this.journey).then(res => {
             if (res.data.Status) {
               this.journeys.unshift(res.data.Data)
-              this.$store.commit('SUCCESS', '保存成功')
+              this.$store.commit('SUCCESS', '新增成功')
               this.dialog = false
             } else {
               this.$store.commit('ERROR', res.data.Error.Err)
@@ -293,7 +299,7 @@ export default {
       }
     }
   },
-  created () {
+  mounted () {
     this.$http.get('/user/journeys', {}).then(res => {
       if (res.data.Status) {
         this.journeys = res.data.Data

@@ -96,19 +96,21 @@ export default {
           } else {
             this.$store.commit('LOGIN_SUCCESS', res.data) // 登陆成功
 
-            this.$store
-              .dispatch('getUserInfo', { type: 'profile' })
-              .then(res => {
+            // 获取用户信息
+            if (this.$store.state.auth.token && !this.$store.state.User.user.id) {
+              this.$http.get('/user/info', { type: 'profile' }).then(res => {
                 // 初始化用户基本信息
                 if (res.data.Status) {
                   this.user = res.data.Data
                   this.$store.commit('GET_USER_PROFILE_SUCCESS', res.data.Data)
-                  var path = this.$route.query.redirect || '/'
-                  this.$router.push(path)
                 } else {
                   this.$store.commit('ERROR', res.data.Error.Err)
                 }
               })
+            }
+
+            var path = this.$route.query.redirect || '/'
+            this.$router.push(path)
           }
         })
       }

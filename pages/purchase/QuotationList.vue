@@ -52,7 +52,7 @@
                 <v-card v-if="qo" v-for="(product,index) in qo.products" :key="product.id" class="quotation-item">
             <v-layout row wrap align-center v-bind:class="{'grey--text':qo.state == '0'}">
               <v-flex xs1 md1>
-                <span class="body-1">({{index+1}}).</span>
+                <!-- <span class="body-1">({{index+1}}).</span> -->
               </v-flex>
               <v-flex md2 xs3>
                  <div v-viewer="options" class="images clearfix">

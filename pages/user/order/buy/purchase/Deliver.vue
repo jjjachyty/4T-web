@@ -61,7 +61,7 @@
                 </div>
 
                 <v-layout class="grey lighten-5">
-                  <v-flex xs2>
+                  <v-flex xs2 md1>
                     <div v-viewer="options" class="images clearfix">
                       <img :src="purchaseRoot+order.ticket+'?'+Number(new Date())" :data-source="purchaseRoot+order.ticket+'?'+Number(new Date())"
                         class="image">

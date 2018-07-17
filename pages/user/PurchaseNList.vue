@@ -4,7 +4,8 @@
       
         <!-- <v-content> -->
         <span v-if="purchases.length<1" class="caption grey--text">还未发布代购,点击[新增]按钮发布一个吧</span>
-        <v-card v-else v-for="(p,index) in purchases" :key="p.id" >
+        <div v-else v-for="(p,index) in purchases" :key="p.id" >
+        <v-card >
         <br>
         <router-link :to="/purchase/+p.id">
            <v-layout row>
@@ -39,13 +40,16 @@
                    </v-layout>
                </v-flex>
            </v-layout></router-link>
-           <v-divider></v-divider>
+
            <v-card-actions >
                <v-spacer></v-spacer>
                <v-btn color="primary" small outline @click="edit(index)">编辑</v-btn>
                <v-btn color="warning" small outline @click="showRemove(index)">删除</v-btn>
            </v-card-actions>
+                      <v-divider></v-divider>
         </v-card>
+        <br>
+        </div>
         <div class="text-xs-center">
             <a  v-if="purchases.length % 10 == 0" ><small>加载更多</small></a>
             <small v-else class="grey--text">已全部加载</small>
@@ -77,7 +81,7 @@ export default {
   },
   methods: {
     addPurchase () {
-      this.$router.push('/user/purchase')
+      this.$router.push('/user/purchase/')
     },
     showRemove (index) {
       if (this.purchases[index].state == '0') {
@@ -97,7 +101,7 @@ export default {
     },
     edit (index) {
       console.log('this.purchases[index].id', this.purchases[index].id)
-      this.$router.push({name: 'edituserpurchase', params: {id: this.purchases[index].id}})
+      this.$router.push('/user/purchase/' + this.purchases[index].id)
     }
   },
   created () {

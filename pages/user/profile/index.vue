@@ -48,7 +48,7 @@
 </template>
 
 <script>
-import Ads from '../Ads'
+import Ads from '~/pages/Ads'
 import Certification from './Certification'
 import UserInfo from './UserInfo'
 import Guarantee from './Guarantee'
@@ -90,14 +90,14 @@ export default {
     {
       title: '修改密码',
       id: 4,
-      icon: 'fa-key',
+      icon: 'password',
       color: 'primary'
     },
     {
       title: '收货地址',
       id: 5,
       icon: 'add',
-      color: 'primary'
+      color: 'pin_drop'
     }
     ]
 
@@ -119,16 +119,9 @@ export default {
     }
   },
   methods: {
-    ...mapActions({
-      // 映射 `this.doneCount` 为 `store.getters.doneTodosCount`
-      getUserInfo: 'getUserInfo'
-    })
   },
   mounted () {
-    this.drawer = true
-  },
-  created () {
-    this.getUserInfo().then(res => {
+    this.$http.get('/user/info', {type: ''}).then(res => {
       if (res.data.Status) {
         this.user = res.data.Data
       } else {
@@ -136,6 +129,7 @@ export default {
       }
     })
     this.active = this.$route.params.active || 1
+    this.drawer = true
   }
 }
 </script>

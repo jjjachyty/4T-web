@@ -10,7 +10,7 @@
                             <v-flex xs2 md1><v-avatar size="30"><img :src="avatarRoot+order.sellBy"></v-avatar></v-flex>
                             <v-flex xs9 md9>{{order.seller}}<v-icon small>keyboard_arrow_right</v-icon></v-flex>  
                             <v-flex xs2 md1><small class="font-weight-black">¥{{order.strikePrice}}</small></v-flex>
-                            <v-flex xs2 md1><small class="caption red--text font-weight-black">{{order.state | dict('orderState')}}</small></v-flex> 
+                            <v-flex xs2 md1><small class="caption red--text font-weight-black">{{'3' | dict('orderState')}}</small></v-flex> 
                             </v-layout>
                             <v-divider></v-divider>
                         </v-flex>

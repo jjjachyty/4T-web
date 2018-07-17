@@ -21,10 +21,10 @@ export default (context) => {
         config.headers.Authorization = `Bearer ${context.store.state.auth.token}`
       }
       if (config.url !== '/user/refreshtoken') {
-        console.log('config', config.url, config.url.indexOf('/user') !== -1, context.store.state.auth.token === '')
+        console.log('config', config.url, context.store.state.auth.expire)
         if (config.url.indexOf('/user') !== -1) { // 用户操作 需要登陆
           // 判断token是否过期
-          if (context.store.state.auth.expire !== '') {
+          if (context.store.state.auth.expire && context.store.state.auth.expire !== '') {
             var expireTime = moment(context.store.state.auth.expire, 'YYYY-MM-DD HH:mm:ss').toDate()
             var nowTime = new Date()
             console.log('过期时间', expireTime, '当前时间', nowTime, expireTime.getTime() - nowTime.getTime())
@@ -40,6 +40,14 @@ export default (context) => {
                 return Promise.reject(res.error)
               })
             }
+          } else {
+            console.log('无登陆访问用户授权资源', context)
+            context.redirect(
+              '/login',
+              {
+                redirect: context.route.fullPath
+              }
+            )
           }
         }
       }
@@ -55,38 +63,39 @@ export default (context) => {
       return response
     },
     error => {
-      console.log('error.response--------', error.response)
-
       if (error && error.response) {
         switch (error.response.status) {
           case 401:
-            console.log(this.$router)
+            console.log('401', error.response.data.message)
             if (error.response.data.message.indexOf('expired') !== -1) {
               // 401 清除token信息并跳转到登录页面
               context.store.commit(types.LOGOUT)
-              context.store.commit('INFO', '登陆状态已过期，请重新登陆')
+              context.store.commit('INFO', '登陆状态已过期，请重新登录')
 
-              this.$router.replace({
-                name: 'login',
-                query: {
-                  redirect: this.$router.currentRoute.fullPath
+              context.redirect(
+                '/login',
+                {
+                  redirect: context.route.fullPath
                 }
-              })
+              )
+            } else if (error.response.data.message.indexOf('auth header is empty') !== -1) {
+              context.store.commit('ERROR', '请先登录')
             } else {
+              console.log('401', '用户名或密码错误')
               context.store.commit('ERROR', '用户名或密码错误')
             }
             break
           case 400:
             context.store.commit('ERROR', '表单数据错误,请检查表单数据')
             break
-          case 0:
+          case 200:
             context.store.commit('INFO', '请先登陆')
-            this.$router.replace({
-              name: 'login',
-              query: {
-                redirect: this.$router.currentRoute.fullPath
+            context.redirect(
+              '/login',
+              {
+                redirect: context.route.fullPath
               }
-            })
+            )
             break
           default:
             context.store.commit('ERROR', error)

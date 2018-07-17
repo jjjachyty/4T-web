@@ -73,16 +73,16 @@
                   <v-card-title>
                     <span class="title red--text">{{index+1}}.</span>
                     <v-spacer></v-spacer>
-                    <small class="red--text">¥{{pd.quantity * pd.price}}</small>
+                    <small class="red--text" v-if="pd.price>0">¥{{pd.quantity * pd.price}}</small>
+                    <small class="red--text" v-else>求报价</small>
                   </v-card-title>
                   <v-layout row justify-center>
 
                     <v-flex md2 xs3 >
-                           <!-- <div v-viewer="options" class="images clearfix">
+                           <div v-viewer="options" class="images clearfix">
                             <img :src="purchaseRoot+pd.images+'?'+Number(new Date())" :data-source="purchaseRoot+pd.images+'?'+Number(new Date())" class="image" >
-                        </div> -->
+                        </div>
 
-                      <vue-preview :slides="{src:purchaseRoot+pd.images+'?'+Number(new Date())}" @close="handleClose"></vue-preview>
 
 
                         <!-- <img :src="pd.images" height="100px" v-viewer> -->
@@ -97,10 +97,11 @@
                           <small class="font-weight-medium">{{pd.quantity}}</small>
                         </v-flex>
                         <v-flex xs6 md4>参考渠道:
-                          <small class="red--text">¥{{pd.shopName}}</small>
+                          <small class="font-weight-medium">{{pd.shopName}}</small>
                         </v-flex>
                         <v-flex xs6 md4>参考单价:
-                          <small class="red--text">¥{{pd.price}}</small>
+                          <small class="red--text" v-if="pd.price>0">¥{{pd.price}}</small>
+                          <small class="red--text" v-else>求报价</small>
                         </v-flex>
 
                         <!-- <v-flex xs6 md4>购买渠道:{{pd.shopName}}</v-flex> -->
@@ -176,6 +177,7 @@
   </v-app>
 </template>
 <script>
+// import 'viewerjs/dist/viewer.css'
 import QuotationList from './QuotationList'
 import QuotationDialog from './QuotationDialog'
 import DestinationUser from './DestinationUser'
@@ -242,6 +244,9 @@ export default {
       })
       return flag
     }
+  },
+  mounted () {
+    this.quotationOrder.products = JSON.parse(JSON.stringify(this.item.products))
   },
   asyncData (context) {
     var item = {}

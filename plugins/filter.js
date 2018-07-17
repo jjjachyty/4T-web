@@ -8,7 +8,7 @@ const rechargeType = {
 }
 const purchaseState = {
   0: '待接单',
-  1: '待支付',
+  1: '待确定',
   2: '已确认',
   3: '已购买',
   4: '已发货'

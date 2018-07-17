@@ -44,7 +44,8 @@ module.exports = {
   css: [
     '~/assets/style/app.styl',
     'vuetify/dist/vuetify.min.css',
-    'viewerjs/dist/viewer.css'
+    'viewerjs/dist/viewer.css',
+    'vue-croppa/dist/vue-croppa.css'
   ],
   /*
      ** Customize the progress bar color

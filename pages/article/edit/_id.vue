@@ -15,10 +15,7 @@
              </ul>
         </div>
     </v-navigation-drawer>
-        <br>
-        <br>
-        <br>
-        <br>
+
             <v-layout row wrap>
                 <v-flex xs12 md3>
 
@@ -377,7 +374,7 @@ export default {
             this.$http.put('/user/exparticle', this.aritcle).then(res => {
               if (res.data.Status) {
                 this.$store.commit('SUCCESS', '更新文章成功,请等待重新审核')
-                this.$router.push('/burst')
+                this.$router.push('/user/articles')
               } else {
                 this.$store.commit('ERROR', res.data.Error.Err)
               }

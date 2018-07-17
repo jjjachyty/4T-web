@@ -37,15 +37,15 @@
           <v-menu v-else offset-y class="menu">
             <v-toolbar-title slot="activator">
               <v-avatar size="40">
-                <img :src="user.avatar+'?'+Number(new Date())" />
+                <img :src="$store.state.User.user.avatar+'?'+Number(new Date())" />
               </v-avatar>
             </v-toolbar-title>
             <v-list>
-              <v-list-tile to="/profile">
+              <v-list-tile to="/user/profile">
                 <v-icon small color="grey">settings</v-icon>
                 <v-list-tile-title>设置</v-list-tile-title>
               </v-list-tile>
-              <v-list-tile to="/burst">
+              <v-list-tile to="/user/articles">
                 <v-icon small color="grey">wb_incandescent</v-icon>
                 <v-list-tile-title>爆料</v-list-tile-title>
               </v-list-tile>
@@ -71,7 +71,7 @@
           <v-list-tile-title>旅拍</v-list-tile-title>
         </v-list-tile> -->
 
-              <v-list-tile to="/msg">
+              <v-list-tile to="/user/message">
                 <v-badge>
                   <v-icon small="">mail</v-icon>
                   <span>通知</span>
@@ -133,17 +133,7 @@ export default {
     }
   },
   created () {
-    if (this.$store.state.auth.token && !this.$store.state.User.user.id) {
-      this.$http.get('/user/info', { type: 'profile' }).then(res => {
-        // 初始化用户基本信息
-        if (res.data.Status) {
-          this.user = res.data.Data
-          this.$store.commit('GET_USER_PROFILE_SUCCESS', res.data.Data)
-        } else {
-          this.$store.commit('ERROR', res.data.Error.Err)
-        }
-      })
-    }
+
   },
   mounted () {
     if (this.$store.state.auth.token) {

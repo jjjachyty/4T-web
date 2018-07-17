@@ -61,9 +61,7 @@ const actions = {
       // commit(types.LOGOUT_FAILED)
     })
   },
-  updateUser ({}, user) {
-    return this.$http.put('/user/info', user)
-  },
+
   newRecharge ({}, recharge) {
     return this.$http.post('/user/recharge', recharge)
   },

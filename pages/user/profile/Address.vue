@@ -121,10 +121,10 @@
     </v-app>
 </template>
 <script>
-import { provinces, citys, countys } from "~/config/address.js";
+import { provinces, citys, countys } from '~/config/address.js'
 export default {
-  props: ["user"],
-  data() {
+  props: ['user'],
+  data () {
     return {
       defaultAddress: 0,
       show: false,
@@ -134,102 +134,102 @@ export default {
       provinces: provinces
       // citys:citys,
       // countys:countys,
-    };
+    }
   },
   computed: {
-    citys: function() {
-      var provinceCode = 0;
+    citys: function () {
+      var provinceCode = 0
       provinces.forEach(element => {
         if (element.name == this.addressData.province) {
-          provinceCode = element.code;
+          provinceCode = element.code
         }
-      });
-      var filterCitys = new Array();
+      })
+      var filterCitys = new Array()
       citys.forEach(element => {
         if (element.parentCode == provinceCode) {
-          filterCitys.push(element);
+          filterCitys.push(element)
         }
-      });
-      return filterCitys;
+      })
+      return filterCitys
     },
-    countys: function() {
-      var cityCode = 0;
-      var filtercountys = new Array();
+    countys: function () {
+      var cityCode = 0
+      var filtercountys = new Array()
 
       citys.forEach(element => {
         if (element.name == this.addressData.city) {
-          cityCode = element.code;
+          cityCode = element.code
         }
-      });
+      })
       countys.forEach(element => {
         if (element.parentCode == cityCode) {
-          filtercountys.push(element);
+          filtercountys.push(element)
         }
-      });
-      return filtercountys;
+      })
+      return filtercountys
     }
   },
   methods: {
-    setDefaultAddress(id) {
-      this.$http.post("/user/defaultaddress", { id: id }).then(res => {
+    setDefaultAddress (id) {
+      this.$http.post('/user/defaultaddress', { id: id }).then(res => {
         if (res.data.Status) {
-          this.user.defaultAddress = id;
-          this.$store.commit("SUCCESS", "设置默认地址成功");
+          this.user.defaultAddress = id
+          this.$store.commit('SUCCESS', '设置默认地址成功')
         } else {
-          this.$store.commit("ERROR", res.data.Error.Err);
+          this.$store.commit('ERROR', res.data.Error.Err)
         }
-      });
+      })
     },
-    add() {
-      this.show = true;
-      this.addressData = {};
+    add () {
+      this.show = true
+      this.addressData = {}
     },
-    edit(index) {
-      this.addressIndex = index;
-      this.addressData = JSON.parse(JSON.stringify(this.user.address[index]));
-      this.show = true;
+    edit (index) {
+      this.addressIndex = index
+      this.addressData = JSON.parse(JSON.stringify(this.user.address[index]))
+      this.show = true
     },
-    showRemove(index) {
-      this.removedialog = true;
-      this.addressIndex = index;
+    showRemove (index) {
+      this.removedialog = true
+      this.addressIndex = index
     },
-    remove() {
+    remove () {
       this.$http
-        .delete("/user/address", {
+        .delete('/user/address', {
           id: this.user.address[this.addressIndex].id
         })
         .then(res => {
           if (res.data.Status) {
-            this.$store.commit("SUCCESS", "删除地址成功");
-            this.user.address.splice(this.addressIndex);
-            this.removedialog = false;
+            this.$store.commit('SUCCESS', '删除地址成功')
+            this.user.address.splice(this.addressIndex)
+            this.removedialog = false
           } else {
-            this.$store.commit("ERROR", res.data);
+            this.$store.commit('ERROR', res.data)
           }
-        });
+        })
     },
-    save(data) {
+    save (data) {
       if (this.$refs.form.validate()) {
         if (this.addressData.id) {
-          this.$http.put("/user/address", this.addressData).then(res => {
+          this.$http.put('/user/address', this.addressData).then(res => {
             if (res.data.Status) {
-              this.$store.commit("SUCCESS", "修改地址成功");
-              this.show = false;
-              this.user.address[this.addressIndex] = this.addressData;
+              this.$store.commit('SUCCESS', '修改地址成功')
+              this.show = false
+              this.user.address[this.addressIndex] = this.addressData
             }
-          });
+          })
         } else {
-          this.$http.post("/user/address", this.addressData).then(res => {
+          this.$http.post('/user/address', this.addressData).then(res => {
             if (res.data.Status) {
-              this.$store.commit("SUCCESS", "新增地址成功");
-              this.show = false;
-              this.user.address.push(res.data.Data);
+              this.$store.commit('SUCCESS', '新增地址成功')
+              this.show = false
+              this.user.address.push(res.data.Data)
             }
-          });
+          })
         }
       }
     }
   },
-  created() {}
-};
+  created () {}
+}
 </script>

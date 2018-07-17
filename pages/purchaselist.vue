@@ -30,6 +30,7 @@
           <v-card>
             <v-layout row>
               <v-flex xs8 md10>
+
                 <!-- <span>
                   <v-chip v-if="item.type=='0'"  small color="red" label class="white--text">
                    求购
@@ -38,6 +39,8 @@
                    代购
                   </v-chip>
                 </span> -->
+                <v-chip small label color="teal" v-if="item.state == 0"><small class="caption white--text">可接单</small></v-chip>
+                <v-chip small label color="grey" v-else><small class="caption white--text">报价中</small></v-chip>
               </v-flex>
               <v-flex xs4 md5>
                   <v-chip small color="red"  label class="white--text body-2">

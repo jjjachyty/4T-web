@@ -64,7 +64,7 @@
             <v-layout row wrap="">
 
                 <v-flex xs10 md11>
-                                  <router-link :to='"/user/article/"+item.id'>
+                                  <router-link :to='"/article/"+item.id'>
 
                   <v-layout row wrap>
                     <v-flex xs12>
@@ -134,7 +134,7 @@
         <v-flex offset-md5 offset-xs3 xs12>
 
           <small v-if="articles.length == 0" class="subheading grey--text">
-            <img src="/static/nodata.png">哦吼~没有查询到数据...</small>
+            <img src="/nodata.png">哦吼~没有查询到数据...</small>
         </v-flex>
       </v-card>
               </v-layout>
@@ -155,11 +155,11 @@
       </v-dialog>
 
 
-      <v-fab-transition>
+ 
         <v-btn color="red" small dark fab fixed bottom right to="exparticle">
           <v-icon>add</v-icon>
         </v-btn>
-      </v-fab-transition>
+
     </div>
   </v-app>
 </template>
@@ -248,7 +248,7 @@ export default {
       })
     },
     edit (item) {
-      this.$router.push({name: 'exparticle', params: {id: item.id, edit: item}})
+      this.$router.push('/article/edit/' + item.id)
     }
 
   }

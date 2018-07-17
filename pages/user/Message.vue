@@ -28,102 +28,102 @@
     </v-app>
 </template>
 <script>
-import Ads from "@/pages/Ads";
+import Ads from '@/pages/Ads'
 
 export default {
   components: {
     Ads
   },
-  data() {
+  data () {
     return {
       more: true,
       msgs: []
-    };
+    }
   },
   methods: {
-    loadmore() {
-      this.getMsg({ lastID: this.msgs[this.msgs.length - 1].id });
+    loadmore () {
+      this.getMsg({ lastID: this.msgs[this.msgs.length - 1].id })
     },
-    remove(type) {
+    remove (type) {
       // type1 删除所有 2删除已读
-      this.$http.delete("/user/msg", { removeType: type }).then(res => {
+      this.$http.delete('/user/msg', { removeType: type }).then(res => {
         if (res.data.Status) {
-          if (type == "1") {
+          if (type == '1') {
             // 清空所有
-            this.msgs = [];
-            this.more = false;
-            this.$store.commit("SUCCESS", "清空所有消息成功");
+            this.msgs = []
+            this.more = false
+            this.$store.commit('SUCCESS', '清空所有消息成功')
           } else {
             // 清空已读
             this.msgs.forEach((item, index) => {
-              if (item.state == "0") {
-                this.splice(index, 1);
+              if (item.state == '0') {
+                this.splice(index, 1)
               }
-              this.$store.commit("SUCCESS", "清空已读成功");
-            });
+              this.$store.commit('SUCCESS', '清空已读成功')
+            })
           }
         } else {
-          this.$store.commit("ERROR", res.data.Error.Err);
+          this.$store.commit('ERROR', res.data.Error.Err)
         }
-      });
+      })
     },
-    update(updateType) {
-      var updateItems = [];
-      if (updateType == "2") {
+    update (updateType) {
+      var updateItems = []
+      if (updateType == '2') {
         // 更新已读
         this.msgs.forEach((item, index) => {
-          if (item.state == "1") {
+          if (item.state == '1') {
             // 如果为未读
-            updateItems.push(item.id);
-            this.msgs[index].state = "0"; // 改为已读
+            updateItems.push(item.id)
+            this.msgs[index].state = '0' // 改为已读
           }
-        });
+        })
       }
       this.$http
-        .put("/user/msg", { updateType: updateType, messageids: updateItems })
+        .put('/user/msg', { updateType: updateType, messageids: updateItems })
         .then(res => {
           if (res.data.Status) {
-            console.log("全部已读");
+            console.log('全部已读')
             // this.$store.commit("SUCCESS","已全部标记为已读")
           } else {
-            console.log(res.data.Error.Err);
+            console.log(res.data.Error.Err)
           }
         })
         .catch(res => {
-          this.$store.commit("ERROR", res.data);
-        });
+          this.$store.commit('ERROR', res.data)
+        })
     },
-    getMsg(params) {
+    getMsg (params) {
       this.$http
-        .get("/user/msg", params)
+        .get('/user/msg', params)
         .then(res => {
           if (res.data.Status) {
             if (res.data.Data.length < 3) {
-              this.more = false;
+              this.more = false
             }
             res.data.Data.forEach(element => {
-              this.msgs.push(element);
-            });
+              this.msgs.push(element)
+            })
           }
         })
         .catch(res => {
-          this.$store.commit("ERROR", res.data);
-        });
+          this.$store.commit('ERROR', res.data)
+        })
     }
   },
-  mounted() {
+  mounted () {
     // 10秒阅读时间
 
     setTimeout(() => {
       if (this.msgs.length > 0) {
-        this.update("2");
+        this.update('2')
       }
-    }, 8000);
+    }, 8000)
   },
-  created() {
-    this.getMsg();
+  created () {
+    this.getMsg()
   }
-};
+}
 </script>
 <style>
 .msg-content {

@@ -3,7 +3,7 @@
 <v-container grid-list-md>
             <v-layout row wrap justify-center align-center>
                 <v-flex xs12 v-for="(item) in items" :key="item.id">
-                    <v-card to="/login">
+                   <router-link :to="'/purchase/'+item.id">
                     <v-layout row>
                 <v-flex xs2 md1>
                     <v-avatar size="40">
@@ -16,7 +16,7 @@
                         <v-flex xs2 class="text-xs-right" v-if="item.amount>0"><small class="red--text">预</small><span class="subheading red--text font-weight-bold">¥{{item.amount}}</span></v-flex>
                         <v-flex xs2 class="text-xs-right" v-else><small class="red--text font-weight-bold">¥{{item.amount}}</small></v-flex>
              </v-layout>
-             </v-card>
+             </router-link>
              <v-divider></v-divider>
                 </v-flex>
                
@@ -48,7 +48,7 @@ export default {
     }
   },
   mounted () {
-    this.$http.get('/destinationpurchase', {destination: this.destination, user: this.$store.state.User.user.id}).then(res => {
+    this.$http.get('/destinationpurchase', {destination: this.destination, user: this.$store.state.User.user.id, id: this.purchase.id}).then(res => {
       if (res.data.Status) {
         this.items = res.data.Data
       }
