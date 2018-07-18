@@ -5,15 +5,24 @@
 <br>
                 <v-card raised>
                     <v-layout row wrap >
-                                                <v-flex xs12 >
-                           <v-layout row align-center justify-center>
-                            <v-flex xs2 md1><v-avatar size="30"><img :src="avatarRoot+order.sellBy"></v-avatar></v-flex>
-                            <v-flex xs9 md9>{{order.seller}}<v-icon small>keyboard_arrow_right</v-icon></v-flex>  
-                            <v-flex xs2 md1><small class="font-weight-black">¥{{order.strikePrice}}</small></v-flex>
-                            <v-flex xs2 md1><small class="caption red--text font-weight-black">{{order.state | dict('orderState')}}</small></v-flex> 
-                            </v-layout>
-                            <v-divider></v-divider>
-                        </v-flex>
+                          <v-flex xs12>
+                        <v-layout row justify-space-between align-center>
+                            <v-flex xs4 md2>
+                                <v-avatar size="30">
+                                    <img :src="avatarRoot+order.buyer.id">
+                                </v-avatar>{{order.buyer.name}}<v-icon small>keyboard_arrow_right</v-icon>
+                            </v-flex>
+                            <v-flex offset-xs4 xs4 md3>
+                                <span class=" font-weight-bold">
+                                    <span class=" deep-orange--text"> ¥{{order.strikePrice}}</span>
+                                </span>/
+                                <small class=" deep-orange--text">代费¥{{order.charge}}</small>
+                            </v-flex>
+                            <v-flex xs2 md2>
+                                <small class="caption red--text font-weight-bold">{{order.state | dict('orderState')}}</small>
+                            </v-flex>
+                        </v-layout>
+                    </v-flex>
                                                 <router-link :to="order.originalLink" class="grey lighten-5">
 
                         <v-flex xs12 md12>
@@ -42,7 +51,7 @@
                             <v-card-actions>
                                                          <v-spacer></v-spacer>
                                 <v-btn outline small @click="showCancel = !showCancel">取消订单</v-btn>
-                                <v-btn small outline color="deep-orange" @click="remind(index)" >提醒购买</v-btn>
+                                <v-btn small outline color="deep-orange" @click="showTicket(index)" >已购买</v-btn>
                             </v-card-actions>
                                                         <v-divider></v-divider>
                             <v-card v-if="showCancel" raised color="grey lighten-5">
@@ -51,8 +60,7 @@
                                 <v-divider></v-divider>
                                 <v-card-text>
                                     <v-radio-group v-model="reason">
-                                        <v-radio value="卖家一直不购买" label="卖家一直不购买"></v-radio>
-                                        <v-radio value="我不想要了" label="我不想要了"></v-radio>
+                                        <v-radio value="无货" label="无货"></v-radio>
                                         <v-radio value="其他" label="其他"></v-radio>
                                     </v-radio-group>
                                     <v-text-field v-if="reason === '其他'" label="其他原因说明" textarea v-model="otherReason">
@@ -67,6 +75,36 @@
                                 </v-container>
                             </v-card>
                         </v-flex>
+                        <v-flex xs12 v-if="showBuy">
+                                  <v-card>
+        <v-card-text>
+            <v-layout align-center>
+                <v-flex xs4>            <croppa  class="upload-btn"
+             :prevent-white-space="true" v-model="croppa" 
+            placeholder="点击上传(小于1M)凭证" :accept="'image/*'" :file-size-limit="1024000" :height="125">
+          </croppa></v-flex>
+                <v-flex xs8>
+                    <v-layout row wrap>
+                        <v-flex xs12>
+                                     <small class="red--text">凭证需要能看清购买地、店铺名称、单价、以及购买时间</small>
+
+                        </v-flex>
+                        <v-flex xs12>
+          <v-text-field textarea v-model="buyTicketExplain" label="购买说明"></v-text-field>
+
+                        </v-flex>
+                    </v-layout>
+                </v-flex>
+            </v-layout>
+
+        </v-card-text>
+        <v-card-actions>
+                    <v-spacer></v-spacer>
+
+          <v-btn  color=" primary darken-1" flat @click.native="returned(2)">确定</v-btn>
+        </v-card-actions>
+      </v-card>
+                        </v-flex>
                     </v-layout>
                 </v-card>
                                  </div>
@@ -75,55 +113,127 @@
 </template>
 <script>
 export default {
-
-  data () {
+  data() {
     return {
+      showBuy: false,
       otherReason: null,
-      reason: '我不想要了',
+      reason: "无货",
       showCancel: false,
+      buyTicketExplain: "",
       index: null,
       ticket: {},
       orders: []
-    }
+    };
   },
   methods: {
-    cancel (index) {
-      var order = this.orders[index]
-      if (this.reason == '其他') {
+    cancel(index) {
+      var order = this.orders[index];
+      if (this.reason == "其他") {
         if (this.otherReason == null) {
-          this.$store.commit('ERROR', '请填写其他原因说明')
-          return
+          this.$store.commit("ERROR", "请填写其他原因说明");
+          return;
         } else {
-          this.reason = this.otherReason
+          this.reason = this.otherReason;
         }
       }
 
-      this.$http.putJson('/user/order/' + order.id, {id: order.id, state: '-1', cancelReason: this.reason}).then(res => {
-        if (res.data.Status) {
-          this.$store.commit('SUCCESS', '取消订单成功')
-          this.orders.splice(index, 1)
-        } else {
-          this.$store.commit('ERROR', res.data.Error.Err)
-        }
-      })
+      this.$http
+        .putJson("/user/order/" + order.id, {
+          id: order.id,
+          state: "-1",
+          cancelReason: this.reason
+        })
+        .then(res => {
+          if (res.data.Status) {
+            this.$store.commit("SUCCESS", "取消订单成功");
+            this.orders.splice(index, 1);
+          } else {
+            this.$store.commit("ERROR", res.data.Error.Err);
+          }
+        });
     },
-    remind (index) {
-      this.index = index
+    showTicket(index) {
+      this.index = index;
+      this.showBuy = true;
+    },
+    buy() {
+      if (this.croppa.imageSet) {
+        handerReturnTicket().then(res => {
+          this.$http
+            .putJson("/user/order/" + order.id, {
+              id: order.id,
+              state: "1",
+              buyTicket: this.orders[this.index].id + "_sbt",
+              buyTicketExplain: this.buyTicketExplain
+            })
+            .then(res => {
+              if (res.data.Status) {
+                this.$store.commit(
+                  "SUCCESS",
+                  "更新订单成功,已为[待发货],请及时发货"
+                );
+                this.orders.splice(index, 1);
+              } else {
+                this.$store.commit("ERROR", res.data.Error.Err);
+              }
+            });
+        });
+      } else {
+        this.$store.commit("INFO", "还未上传上传凭证哦");
+      }
+    },
+    handerReturnTicket() {
+      // 获取上传的token
+      return new Promise((resolve, reject) => {
+        this.$http.get("/user/uptoken", { type: "3" }).then(res => {
+          if (res.data.Status) {
+            var uploadToken = res.data.Data;
+            if (this.croppa.imageSet) {
+              // 需要上传
+              var pic = this.croppa.generateDataUrl("image/png");
+              var key = this.orders[this.index].id + "_sbt";
+              this.$store
+                .dispatch("uploadImages", {
+                  uploadToken: uploadToken,
+                  file: pic,
+                  key: key
+                })
+                .then(res => {
+                  resolve(true);
+                })
+                .catch(res => {
+                  this.$store.commit("ERROR", "凭证上传失败");
+                  reject(false);
+                });
+            }
+            resolve(true);
+          } else {
+            this.$store.commit("ERROR", "获取头像上传Token失败，请稍后再试");
+            return reject(false);
+          }
+        });
+      });
     }
   },
-  created () {
-    this.$http.get('/user/orders', {type: 1, identity: 0, state: '^1'}).then(res => {
-      if (res.data.Status) {
-        this.orders = res.data.Data
-      }
-    })
+  created() {
+    this.$http
+      .get("/user/orders", { type: 1, identity: 1, state: "^1" })
+      .then(res => {
+        if (res.data.Status) {
+          this.orders = res.data.Data;
+        }
+      });
   }
-}
+};
 </script>
 <style scoped>
-.image{
-    width: 50%;
-    height: 100px;
+image {
+  max-width: 100%;
+  height: 100px;
 }
-
+</style>
+<style>
+canvas {
+  max-width: 100%;
+}
 </style>
