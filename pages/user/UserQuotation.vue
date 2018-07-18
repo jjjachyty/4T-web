@@ -6,7 +6,7 @@
                 <small >空空如也,赶紧去接[求代购单]吧</small>
             </div>
             <v-layout v-else>
-                <v-flex v-for="item in items">
+                <v-flex v-for="item in items" :key="item.id">
                 <v-card :to="/purchase/+item.purchaseID">
                     <v-layout>
                         <v-flex xs2>

@@ -195,7 +195,7 @@
                            <small v-if="'0'==j.state">已过期</small>
                        </v-flex>
                         <v-flex xs12 md8>
-                           <v-chip small v-for="pd in j.products" label v-bind:class="{'pink':'1' == j.state,'white--text':true}" >
+                           <v-chip small v-for="pd in j.products" :key="pd.id" label v-bind:class="{'pink':'1' == j.state,'white--text':true}" >
                                {{pd}}
                            </v-chip>
                        </v-flex>

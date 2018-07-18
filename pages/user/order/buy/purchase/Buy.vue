@@ -55,10 +55,15 @@
                                         <v-radio value="我不想要了" label="我不想要了"></v-radio>
                                         <v-radio value="其他" label="其他"></v-radio>
                                     </v-radio-group>
-                                    <v-text-field label="其他原因说明" textarea v-model="otherReason">
+                                    <v-text-field v-if="reason === '其他'" label="其他原因说明" textarea v-model="otherReason">
 
                                     </v-text-field>
                                 </v-card-text>
+                                                                <v-divider></v-divider>
+                                <v-card-actions>
+                                    <v-spacer></v-spacer>
+                                    <v-btn small outline @click="cancel(index)" color="primary">确定</v-btn>
+                                </v-card-actions>
                                 </v-container>
                             </v-card>
                         </v-flex>
@@ -74,7 +79,7 @@ export default {
   data () {
     return {
       otherReason: null,
-      reason: null,
+      reason: '我不想要了',
       showCancel: false,
       index: null,
       ticket: {},
@@ -82,15 +87,32 @@ export default {
     }
   },
   methods: {
-    cancel () {
-      this.showCancel = true
+    cancel (index) {
+      var order = this.orders[index]
+      if (this.reason == '其他') {
+        if (this.otherReason == null) {
+          this.$store.commit('ERROR', '请填写其他原因说明')
+          return
+        } else {
+          this.reason = this.otherReason
+        }
+      }
+
+      this.$http.putJson('/user/order/' + order.id, {id: order.id, state: '-1', cancelReason: this.reason}).then(res => {
+        if (res.data.Status) {
+          this.$store.commit('SUCCESS', '取消订单成功')
+          this.orders.splice(index, 1)
+        } else {
+          this.$store.commit('ERROR', res.data.Error.Err)
+        }
+      })
     },
     remind (index) {
       this.index = index
     }
   },
   created () {
-    this.$http.get('/user/orders', {type: 1, identity: 0, state: 1}).then(res => {
+    this.$http.get('/user/orders', {type: 1, identity: 0, state: '^1'}).then(res => {
       if (res.data.Status) {
         this.orders = res.data.Data
       }

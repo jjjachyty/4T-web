@@ -2,7 +2,7 @@
     <v-app>
 <v-container grid-list-md>
             <v-layout row wrap justify-center align-center>
-                <v-flex xs12 v-for="(item,index) in items">
+                <v-flex xs12 v-for="(item,index) in items" :key="item.id">
                     <v-layout row>
                 <v-flex xs2 md1>
                     <v-avatar size="40">
@@ -14,7 +14,7 @@
                         <v-flex xs12>{{item.careator}}</v-flex>
                         <v-flex xs12> <small class=" caption font-weight-bold">{{item.startDate|formatDate('YYYY-MM-DD')}} 至 {{item.endDate|formatDate('YYYY-MM-DD')}}</small></v-flex>
                         <v-flex xs12>
-                           <div class="products"><v-chip small label  color="primary white--text" v-for="pd in item.products">{{pd}}</v-chip></div> 
+                           <div class="products"><v-chip small label  color="primary white--text" v-for="pd in item.products" :key="pd.id">{{pd}}</v-chip></div> 
                         </v-flex>
                     </v-layout>
                    

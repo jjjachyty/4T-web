@@ -25,8 +25,8 @@
         </v-tabs>
         </v-card>
         <v-divider></v-divider>
-       <BuyPurchase v-if="active == 1"></BuyPurchase>
-
+       <BuyPurchase v-if="active == 0"></BuyPurchase>
+<SellPurchase v-if="active == 1"></SellPurchase>
         </v-flex>
     </v-layout>
 
@@ -35,15 +35,18 @@
 </template>
 <script>
 import BuyPurchase from './buy/purchase/Main'
+import SellPurchase from './sell/purchase/Main'
+
 export default {
   components: {
-    BuyPurchase
+    BuyPurchase,
+    SellPurchase
   },
 
   data () {
     return {
       tab: null,
-
+      identity: 0,
       orders: [],
       active: 1,
       items: [{

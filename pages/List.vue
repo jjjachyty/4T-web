@@ -12,7 +12,7 @@
 
      <v-avatar  size="40">
        <img v-if="item.nickNamePublish" :src="'/static/avatar/'+item.nickName+'.png'">
-        <img v-else :src="url+item.createUser+'?'+Number(new Date())">
+        <img v-else :src="url+item.createBy+'?'+Number(new Date())">
 
       </v-avatar>
              <span v-if="item.nickNamePublish" slot="badge" class="caption" left>匿</span>
@@ -76,9 +76,9 @@
           </div>
 </template>
 <script>
-import { avatarRoot, apiRoot } from "@/config";
+import { avatarRoot, apiRoot } from '@/config'
 export default {
-  props: ["articles"],
+  props: ['articles'],
   // metaInfo() {
   //   return {
   //     title: this.title,
@@ -86,7 +86,7 @@ export default {
   //   };
   // },
 
-  data() {
+  data () {
     return {
       url: avatarRoot,
       title: null,
@@ -102,12 +102,12 @@ export default {
       //             // {id:'asasdasd8',createAt:'2018-06-08',author:'Janly',title:'测试',location:'重庆',content:'xxxxx',view:20,thumbsUp:20000,thumbsDown:22,comments:2000}
 
       // ]
-    };
+    }
   },
-  mounted() {},
+  mounted () {},
 
-  created() {}
-};
+  created () {}
+}
 </script>
 <style scoped>
 .title {

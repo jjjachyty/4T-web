@@ -31,7 +31,8 @@ const orderState = {
   2: '待发货',
   3: '待收货',
   4: '待评价',
-  5: '售后/维权'
+  50: '申请退款中',
+  51: '申请退货中'
 }
 
 export function dict (value, key) {

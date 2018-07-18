@@ -79,30 +79,30 @@
   </div>
 </template>
 <script>
-import { Carousel, Slide } from "vue-carousel";
-import { avatarRoot } from "~/config";
+import { Carousel, Slide } from 'vue-carousel'
+import { avatarRoot } from '~/config'
 
 export default {
   components: {
     Carousel,
     Slide
   },
-  props: ["items"],
-  data() {
+  props: ['items'],
+  data () {
     return {
       purchType: 0,
-      keyWords: "",
+      keyWords: '',
       filter: false,
       filters: {},
       avatarRoot: avatarRoot
-    };
+    }
   },
   methods: {
-    toDetail(item) {
-      this.$router.push("/purchase/" + item.id);
+    toDetail (item) {
+      this.$router.push('/purchase/' + item.id)
     }
   }
-};
+}
 </script>
 <style scoped>
 .img-herder img {

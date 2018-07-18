@@ -44,9 +44,10 @@
 <script>
 import { mapActions, mapGetters } from 'vuex'
 import Header from '~/components/Header'
-
 export default {
-  components: { Header },
+  components: {
+    Header
+  },
   data () {
     return {
       showSuggest: false,
@@ -83,7 +84,9 @@ export default {
 
         this.$router.push({
           name: 'login',
-          query: { redirect: this.$router.currentRoute.fullPath }
+          query: {
+            redirect: this.$router.currentRoute.fullPath
+          }
         })
       }
     }

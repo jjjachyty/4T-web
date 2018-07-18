@@ -21,7 +21,6 @@ export default (context) => {
         config.headers.Authorization = `Bearer ${context.store.state.auth.token}`
       }
       if (config.url !== '/user/refreshtoken') {
-        console.log('config', config.url, context.store.state.auth.expire)
         if (config.url.indexOf('/user') !== -1) { // 用户操作 需要登陆
           // 判断token是否过期
           if (context.store.state.auth.expire && context.store.state.auth.expire !== '') {
@@ -41,7 +40,6 @@ export default (context) => {
               })
             }
           } else {
-            console.log('无登陆访问用户授权资源', context)
             context.redirect(
               '/login',
               {

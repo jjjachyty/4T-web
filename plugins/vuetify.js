@@ -29,7 +29,8 @@ import {
   VCombobox,
   VDatePicker,
   VTimePicker,
-  VExpansionPanel
+  VExpansionPanel,
+  VBtnToggle
 } from 'vuetify'
 
 Vue.use(Vuetify, {
@@ -62,7 +63,8 @@ Vue.use(Vuetify, {
     VCombobox,
     VDatePicker,
     VTimePicker,
-    VExpansionPanel
+    VExpansionPanel,
+    VBtnToggle
   },
   theme: {
     primary: '#009688',

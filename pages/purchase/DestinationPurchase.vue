@@ -11,7 +11,7 @@
                       </v-avatar>
                 </v-flex>
                 <v-flex xs8>
-                             <div class="products"><v-chip small label color="primary white--text" v-for="product in item.products">{{product.name}}</v-chip></div>
+                             <div class="products"><v-chip small label color="primary white--text" v-for="product in item.products" :key="pd.id">{{product.name}}</v-chip></div>
                 </v-flex>
                         <v-flex xs2 class="text-xs-right" v-if="item.amount>0"><small class="red--text">预</small><span class="subheading red--text font-weight-bold">¥{{item.amount}}</span></v-flex>
                         <v-flex xs2 class="text-xs-right" v-else><small class="red--text font-weight-bold">¥{{item.amount}}</small></v-flex>

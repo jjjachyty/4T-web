@@ -37,7 +37,10 @@ module.exports = {
   }, {
     src: '~/plugins/ssr.js',
     ssr: true
-  }, '~/plugins/mixins.js', '~/plugins/filter.js', {
+  }, '~/plugins/filter.js', {
+    src: '~/plugins/mixins.js',
+    ssr: true
+  }, {
     src: '~/plugins/localStorage.js',
     ssr: false
   }, {
