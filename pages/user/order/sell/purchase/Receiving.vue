@@ -6,40 +6,19 @@
                 <v-card raised>
                     <v-layout row wrap >
                                                 <v-flex xs12 >
-                           <v-layout row align-center justify-center>
-                            <v-flex xs2 md1><v-avatar size="30"><img :src="avatarRoot+order.sellBy"></v-avatar></v-flex>
-                            <v-flex xs9 md9>{{order.seller}}<v-icon small>keyboard_arrow_right</v-icon></v-flex>  
-                            <v-flex xs2 md1><small class="font-weight-black">¥{{order.strikePrice}}</small></v-flex>
-                            <v-flex xs2 md1><small class="caption red--text font-weight-black">{{'3' | dict('orderState')}}</small></v-flex> 
-                            </v-layout>
-                            <v-divider></v-divider>
+                          <Top :order="order"></Top>
                         </v-flex>
                                                 <router-link :to="order.originalLink" class="grey lighten-5">
 
                         <v-flex xs12>
                             <v-card-text>
-                            <v-layout row v-for="pd in order.products" :key="pd.id">
-                        <v-flex xs2>
-                            <v-card-media height="50">
-                                <img :src="purchaseRoot+pd.images" >
-                            </v-card-media>
-                        </v-flex>
-                        <v-flex xs10>
-                            <v-layout row wrap class="caption grey--text" align-center justify-center>
-                                <v-flex xs10>名称：{{pd.name}}</v-flex>
-                                <v-flex xs2><span>数量:{{pd.quantity}}</span></v-flex>
-                                <v-flex xs10>购买渠道:{{pd.shopName}}</v-flex>
-                                <v-flex xs2>¥{{pd.price}}</v-flex>
-                            </v-layout>
-                            
-                        </v-flex>
-                            </v-layout>
+                <Product :products="order.products"></Product>
                             </v-card-text>
                         </v-flex>
 </router-link>
                         <v-flex xs12>
                               <v-expansion-panel popout v-model="expand" expand focusable>
-    <v-expansion-panel-content>
+    <!-- <v-expansion-panel-content>
       <div slot="header"><small class="font-weight-bold">购买凭证</small></div>
                            <v-card raised  class="grey--text">
                                                        <v-divider></v-divider>
@@ -61,18 +40,18 @@
                                </v-container>
                            </v-card>
                         
-    </v-expansion-panel-content>
+    </v-expansion-panel-content> -->
         <v-expansion-panel-content>
-      <div slot="header"><small class="font-weight-bold">物流信息 <span class="red--text">{{order.express.state}}</span></small></div>
+      <div slot="header"><small class="font-weight-bold">物流信息 <span class="red--text">{{order.buyer.express.state}}</span></small></div>
                            <v-card raised  class="grey--text">
 <v-container>
-                            <v-layout wrap>
-                                <v-flex><small>快递公司:{{order.express.name}}</small></v-flex>
-                                <v-flex><small>快递单号:{{order.express.number}}</small></v-flex>
-                                <v-flex><small>发货时间:{{order.express.createAt | formatDate("YYYY-MM-DD HH:mm:ss")}}</small></v-flex>
-                                <v-flex><small>物流到达:{{order.express.updateAt | formatDate("YYYY-MM-DD HH:mm:ss")}}到达{{order.express.arrivedAt}}</small></v-flex>
-                                <v-flex xs6><v-icon small>account</v-icon><small>派送员:{{order.express.courier}}</small></v-flex>
-                                <v-flex xs6><v-icon small>phone</v-icon><small>电话:<a :href="'tel:'+order.express.contactNumber">{{order.express.contactNumber}}</a></small></v-flex>
+                            <v-layout row wrap justify-start>
+                                <v-flex xs4><small>快递公司:{{order.buyer.express.name}}</small></v-flex>
+                                <v-flex xs4><small>快递单号:{{order.buyer.express.number}}</small></v-flex>
+                                <v-flex xs4><small>发货时间:{{order.buyer.express.createAt | formatDate("YYYY-MM-DD HH:mm:ss")}}</small></v-flex>
+                                <v-flex xs12><small>物流到达:{{order.buyer.express.updateAt | formatDate("YYYY-MM-DD HH:mm:ss")}}到达{{order.buyer.express.arrivedAt}}</small></v-flex>
+                                <v-flex xs4><v-icon small>account_circle</v-icon><small>派送员:{{order.buyer.express.courier}}</small></v-flex>
+                                <v-flex xs4><v-icon small>contact_phone</v-icon><small>电话:<a :href="'tel:'+order.buyer.express.contactNumber">{{order.buyer.express.contactNumber}}</a></small></v-flex>
 
                             </v-layout>
 </v-container>
@@ -80,36 +59,29 @@
                         
     </v-expansion-panel-content>
   </v-expansion-panel>
-      <v-divider></v-divider>
 
-  <v-card-actions>
-      <v-spacer></v-spacer>
-      <v-btn small outline color="teal" @click="showConfirm(index)">确认收货</v-btn>
-  </v-card-actions>
+
+
                         </v-flex>
                     </v-layout>
                 </v-card>
-  <v-dialog v-model="confirm" persistent max-width="290">
-      <v-card>
-        <v-card-title class="headline">确认否已经收到货？<v-subheader>确认收货会将付款打给卖家</v-subheader></v-card-title>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn color="green darken-1" flat @click.native="confirm = false">取消</v-btn>
-          <v-btn color="green darken-1" flat @click.native="received">确定</v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
+
                                  </div>
                 
     </v-app>
 </template>
 <script>
+import Top from './Top'
+import Product from './Product'
 export default {
-
+  components: {
+    Top,
+    Product
+  },
   data () {
     return {
       confirm: false,
-      expand: [false, true],
+      expand: [true],
       otherReason: null,
       reason: null,
       showCancel: false,
@@ -139,7 +111,7 @@ export default {
     }
   },
   created () {
-    this.$http.get('/user/orders', {type: 1, identity: 0, state: '^3'}).then(res => {
+    this.$http.get('/user/orders', {type: 1, identity: 1, state: '^3'}).then(res => {
       if (res.data.Status) {
         this.orders = res.data.Data
       }

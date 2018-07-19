@@ -6,56 +6,25 @@
     <div v-else v-for="(order,index) in orders" :key="order.id" class="grey lighten-5">
       <br>
       <v-card >
-        <v-layout row wrap>
+        <v-layout row wrap >
           <v-flex xs12>
-            <v-layout row align-center justify-center>
-              <v-flex xs2 md1>
-                <v-avatar size="30">
-                  <img :src="avatarRoot+order.sellBy">
-                </v-avatar>
-              </v-flex>
-              <v-flex xs9 md9>{{order.seller}}
-                <v-icon small>keyboard_arrow_right</v-icon>
-              </v-flex>
-              <v-flex xs2 md1>
-                <small class="font-weight-black">¥{{order.strikePrice}}</small>
-              </v-flex>
-              <v-flex xs2 md1>
-                <small class="caption red--text font-weight-black">{{order.state | dict('orderState')}}</small>
-              </v-flex>
-            </v-layout>
-            <v-divider></v-divider>
+            <Top :order="order"></Top>
           </v-flex>
-          <router-link :to="order.originalLink" class="grey lighten-5">
+         
 
-            <v-flex xs12>
-              <v-card-text>
-                <v-layout row v-for="pd in order.products" :key="pd.id">
-                  <v-flex xs2>
-                    <v-card-media height="70">
-                      <img :src="purchaseRoot+pd.images">
-                    </v-card-media>
-                  </v-flex>
-                  <v-flex xs10>
-                    <v-layout row wrap class="caption grey--text" align-center justify-center>
-                      <v-flex xs10>名称：{{pd.name}}</v-flex>
-                      <v-flex xs2>
-                        <span>数量:{{pd.quantity}}</span>
-                      </v-flex>
-                      <v-flex xs10>购买渠道:{{pd.shopName}}</v-flex>
-                      <v-flex xs2>¥{{pd.price}}</v-flex>
-                    </v-layout>
-
-                  </v-flex>
-                </v-layout>
+            <v-flex xs12 md12>
+               <router-link :to="order.originalLink" >
+              <v-card-text class="grey lighten-5">
+                <Product :products="order.products"></Product>
               </v-card-text>
+               </router-link>
             </v-flex>
-          </router-link>
+
           <v-flex xs12>
 
             <v-expansion-panel popout v-model="expand" expand focusable>
 
-              <v-expansion-panel-content>
+              <!-- <v-expansion-panel-content>
                 <div slot="header">
                   <small>购买凭证</small>
                 </div>
@@ -63,7 +32,7 @@
                 <v-layout class="grey lighten-5">
                   <v-flex xs2 md1>
                     <div v-viewer="options" class="images clearfix">
-                      <img :src="purchaseRoot+order.ticket+'?'+Number(new Date())" :data-source="purchaseRoot+order.ticket+'?'+Number(new Date())"
+                      <img :src="purchaseRoot+order.buyTicket+'?'+Number(new Date())" :data-source="purchaseRoot+order.buyTicket+'?'+Number(new Date())"
                         class="image">
                     </div>
                   </v-flex>
@@ -72,10 +41,83 @@
                       <v-flex xs12>
                         <small>购买说明:</small>
                       </v-flex>
-                      <v-flex class="caption">{{order.ticketExplain}}</v-flex>
+                      <v-flex class="caption">{{order.buyTicketExplain}}</v-flex>
                     </v-layout>
                   </v-flex>
                 </v-layout>
+
+              </v-expansion-panel-content> -->
+                            <v-expansion-panel-content>
+                             
+                <div slot="header">
+                  <small>物流信息</small>
+                </div>
+                <v-container grid-list-md>
+                   <v-form ref="expressForm" lazy-validation>
+                <v-layout row wrap class="grey lighten-5" align-center justify-center>
+                 <v-flex xs6>
+                   收货人:{{order.express.receivingAddress.userName}}
+                 </v-flex>
+                  <v-flex xs6>
+                   电话:{{order.express.receivingAddress.phone}}
+                 </v-flex>
+                 <v-flex xs12>
+                   收货地址:{{order.express.receivingAddress.province+order.express.receivingAddress.city+order.express.receivingAddress.county+order.express.receivingAddress.street}}
+                                 <v-divider></v-divider>
+
+                 </v-flex>
+                 <v-flex xs8 md5>
+                                   <v-autocomplete
+                v-model="express.name"
+                :items="expresss" 
+                placeholder="选择物流公司"
+                required
+                height="50"
+                label="物流公司"
+                :rules="[v => !!v || '不能为空']"
+                no-data-text="暂无该物流"
+                item-text="name"
+              item-value="name"
+                clearable=""
+                autocomplete> 
+                  <template slot="selection" slot-scope="data">
+                    <!-- <v-chip :selected="data.selected.name" :key="JSON.stringify(data.item.name)" class="chip--select-multi" @input="data.parent.selectItem(data.item)"> -->
+                <img :src="'/express/'+data.item.id+'.png'">
+                      <!-- {{ data.item.name }} -->
+                    <!-- </v-chip> -->
+                  </template>
+                  <template slot="item" slot-scope="data">
+                    <!-- <template v-if="data.item">
+                      <v-list-tile-content v-html="data.item.name"></v-list-tile-content>
+                    </template>  -->
+                    
+                    <template>
+                      
+                      
+       
+                      <v-list-tile-content>
+                          <img :src="'/express/'+data.item.id+'.png'">
+                        <!-- <v-list-tile-title v-html="data.item.name"></v-list-tile-title> -->
+                      </v-list-tile-content>
+                    </template> 
+                  </template>
+                 </v-autocomplete>
+
+                 </v-flex>
+                 
+                 <v-flex xs8 md5>
+                   <v-text-field height="50" label="快递单号" :rules="[v => !!v || '不能为空']" v-model="express.number" clearable></v-text-field>
+                 </v-flex>
+                 <v-flex  xs12 md2>
+                                    <v-card-actions>
+                                      <v-spacer></v-spacer>
+                   <v-btn small outline color="primary" @click="deliver(index)">发货</v-btn>
+                 </v-card-actions>
+                 </v-flex>
+
+                </v-layout>
+                </v-form>
+</v-container>
 
               </v-expansion-panel-content>
             </v-expansion-panel>
@@ -88,24 +130,48 @@
   </v-app>
 </template>
 <script>
+import Top from './Top'
+import Product from './Product'
 export default {
-
+  components: {
+    Top,
+    Product
+  },
   data () {
     return {
       expand: [true],
-      orders: []
+      orders: [],
+      express: {}
+
     }
   },
   methods: {
     cancel () {
       this.showCancel = true
     },
-    remind () {
-
+    deliver (index) {
+      var order = this.orders[index]
+      this.$http
+        .putJson('/user/order/' + order.id, {
+          id: order.id,
+          state: '2',
+          buyer: {express: this.express}
+        })
+        .then(res => {
+          if (res.data.Status) {
+            this.$store.commit(
+              'SUCCESS',
+              '发货成功已更新为[待收货],提醒买家准时收货'
+            )
+            this.orders.splice(index, 1)
+          } else {
+            this.$store.commit('ERROR', res.data.Error.Err)
+          }
+        })
     }
   },
   created () {
-    this.$http.get('/user/orders', {type: 1, identity: 0, state: '^2'}).then(res => {
+    this.$http.get('/user/orders', {type: 1, identity: 1, state: '^2'}).then(res => {
       if (res.data.Status) {
         this.orders = res.data.Data
       }

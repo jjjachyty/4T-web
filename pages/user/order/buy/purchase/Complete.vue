@@ -164,7 +164,7 @@ export default {
     returnIt (type, hasTicket) {
       var state = type === 1 ? '50' : '51'
       var order = this.orders[this.index]
-      var returnTicket = hasTicket ? order.id + '_t' : ''
+      var returnTicket = hasTicket ? order.id + '_brt' : ''
       this.$http.putJson('/user/order/' + order.id, {id: order.id, type: '1', state: state, returnTicket: returnTicket}).then(res => {
         if (res.data.Status) {
           this.$store.commit('SUCCESS', '申请退货成功，等待卖家处理')
@@ -183,7 +183,7 @@ export default {
             var uploadToken = res.data.Data
             if (this.croppa.imageSet) { // 需要上传
               var pic = this.croppa.generateDataUrl('image/png')
-              var key = this.orders[this.index].id + '_t'
+              var key = this.orders[this.index].id + '_brt'
               this.$store.dispatch('uploadImages', {uploadToken: uploadToken, file: pic, key: key}).then(res => {
                 resolve(true)
               }).catch(res => {

@@ -9,33 +9,13 @@
                     <v-layout row wrap >
                         
                         <v-flex xs12 >
-                           <v-layout row align-center justify-center>
-                            <v-flex xs2 md1><v-avatar size="30"><img :src="avatarRoot+order.sellBy"></v-avatar></v-flex>
-                            <v-flex xs9 md9>{{order.seller}}<v-icon small>keyboard_arrow_right</v-icon></v-flex>  
-                            <v-flex xs2 md1><small class="font-weight-black">¥{{order.strikePrice}}</small></v-flex>
-                            <v-flex xs2 md1><small class="caption red--text font-weight-black">{{order.state | dict('orderState')}}</small></v-flex> 
-                            </v-layout>
-                            <v-divider></v-divider>
+                          <Top :order="order"></Top>
                         </v-flex>
                         <router-link :to="order.originalLink" class="grey lighten-5">
                         <v-flex xs12>
                             <v-card-text>
-                            <v-layout row v-for="pd in order.products" :key="pd.id">
-                        <v-flex xs2>
-                            <v-card-media height="50">
-                                <img :src="purchaseRoot+pd.images" >
-                            </v-card-media>
-                        </v-flex>
-                        <v-flex xs10 >
-                            <v-layout row wrap class="caption grey--text" align-center justify-center>
-                                <v-flex xs10>名称：{{pd.name}}</v-flex>
-                                <v-flex xs2><span>数量:{{pd.quantity}}</span></v-flex>
-                                <v-flex xs10>购买渠道:{{pd.shopName}}</v-flex>
-                                <v-flex xs2>¥{{pd.price}}</v-flex>
-                            </v-layout>
-                            
-                        </v-flex>
-                            </v-layout>
+                                            <Product :products="order.products"></Product>
+
                             </v-card-text>
                         </v-flex>
 </router-link>
@@ -81,23 +61,34 @@
                            </v-card>
                         
     </v-expansion-panel-content>
-            <v-expansion-panel-content v-if="order.reviews">
+            <v-expansion-panel-content>
       <div slot="header" class="rate">
          
-              <small class="font-weight-bold">评价</small>
+              <small class="font-weight-bold">买家评价</small>
               <rate class="rate" :length="5" :value="2" :readonly="true" :ratedesc="['非常糟糕', '糟糕的', '一般', '好', '非常好']" />
           
           </div>
 <v-container class="caption grey--text">
-    <v-avatar size="20"><img :src="avatarRoot+order.buyBy"></v-avatar>
-{{order.reviews}}
+  <v-layout wrap>
+    <v-flex xs12>
+          <v-avatar size="30"><img :src="avatarRoot+order.buyer.id"></v-avatar>
+:
+<v-chip>{{order.buyer.reviews}}</v-chip>
+    </v-flex>
+    <v-flex xs12 class="text-xs-right" v-if="order.seller.reviews">
+     
+      <v-chip >{{order.seller.reviews}}</v-chip>:
+       <v-avatar size="30"><img :src="avatarRoot+order.seller.id"></v-avatar>
+    </v-flex>
+  </v-layout>
+
 </v-container>
                         
     </v-expansion-panel-content>
   </v-expansion-panel>
   <v-card-actions >
-     <v-spacer></v-spacer> <v-btn v-if="!order.reviews" small outline>评论</v-btn>
-     <v-btn small outline color="red" @click="showReturnDialog(index)">退款退货</v-btn>
+    <v-spacer></v-spacer>
+     <v-btn small outline color="red" v-if="!order.seller.reviews" @click="showReturnDialog(index)">评价买家</v-btn>
   </v-card-actions>
                         </v-flex>
                     </v-layout>
@@ -135,8 +126,13 @@
     </v-app>
 </template>
 <script>
+import Top from './Top'
+import Product from './Product'
 export default {
-
+  components: {
+    Top,
+    Product
+  },
   data () {
     return {
       croppa: {},
@@ -202,7 +198,7 @@ export default {
 
   },
   created () {
-    this.$http.get('/user/orders', {type: 1, identity: 0, state: 4}).then(res => {
+    this.$http.get('/user/orders', {type: 1, identity: 1, state: 4}).then(res => {
       if (res.data.Status) {
         this.orders = res.data.Data
       }
