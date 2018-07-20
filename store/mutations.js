@@ -1,12 +1,11 @@
 import * as types from './mutation-types'
+import { unsetToken } from '~/utils/auth'
 export const state = {
   // apiRoot: 'http://106.12.10.77:9090',
   // avatarRoot: 'http://pa7c4jxbs.bkt.clouddn.com/',
   articleRoot: 'http://pa8topmtg.bkt.clouddn.com/',
-  auth: {
-    token: '',
-    expire: {}
-  },
+  token: '',
+  user: {},
   snackbar: {
     timeout: 4000,
     show: false,
@@ -17,15 +16,16 @@ export const state = {
 }
 
 export const mutations = {
-  [types.LOGIN_SUCCESS] (state, data) {
-    state.auth.token = data.token
-    state.auth.expire = data.expire
+  [types.SET_USER] (state, data) {
+    state.user = data || {}
+  },
+  [types.SET_TOKEN] (state, data) {
+    state.token = data || {}
   },
   [types.LOGOUT] (state, data) {
-    console.log('LOGOUT', state)
-    state.auth.token = ''
-    state.auth.expire = {}
-    state.User.user = {}
+    state.user = {}
+    state.token = {}
+    unsetToken()
   },
   [types.REGISTER_SUCCESS] (state, data) {
     // state.token = data.token

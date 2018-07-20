@@ -17,38 +17,39 @@ export default (context) => {
   // http request 拦截器
   axios.interceptors.request.use(
     config => {
-      if (context.store.state.auth.token !== '') {
-        config.headers.Authorization = `Bearer ${context.store.state.auth.token}`
+      console.log(config.url, context.store.getters.auth)
+      if (context.store.state.token !== '') {
+        config.headers.Authorization = `Bearer ${context.store.state.token}`
       }
-      if (config.url !== '/user/refreshtoken') {
-        if (config.url.indexOf('/user') !== -1) { // 用户操作 需要登陆
-          // 判断token是否过期
-          if (context.store.state.auth.expire && context.store.state.auth.expire !== '') {
-            var expireTime = moment(context.store.state.auth.expire, 'YYYY-MM-DD HH:mm:ss').toDate()
-            var nowTime = new Date()
-            console.log('过期时间', expireTime, '当前时间', nowTime, expireTime.getTime() - nowTime.getTime())
-            if (expireTime.getTime() - nowTime.getTime() < 600000) { // 剩余10分钟 则重新获取token
-              // 重新请求token
-              axios.get('/user/refreshtoken', {}).then(res => {
-                console.log('refreshtoken', res)
-                if (res.status === 200) {
-                  context.store.commit('LOGIN_SUCCESS', res.data)
-                  return config
-                }
-              }).catch(res => {
-                return Promise.reject(res.error)
-              })
-            }
-          } else {
-            context.redirect(
-              '/login',
-              {
-                redirect: context.route.fullPath
-              }
-            )
-          }
-        }
-      }
+      // if (config.url !== '/user/refreshtoken') {
+      //   if (config.url.indexOf('/user') !== -1) { // 用户操作 需要登陆
+      //     // 判断token是否过期
+      //     if (context.store.state.auth.expire && context.store.state.auth.expire !== '') {
+      //       var expireTime = moment(context.store.state.auth.expire, 'YYYY-MM-DD HH:mm:ss').toDate()
+      //       var nowTime = new Date()
+      //       console.log('过期时间', expireTime, '当前时间', nowTime, expireTime.getTime() - nowTime.getTime())
+      //       if (expireTime.getTime() - nowTime.getTime() < 600000) { // 剩余10分钟 则重新获取token
+      //         // 重新请求token
+      //         axios.get('/user/refreshtoken', {}).then(res => {
+      //           console.log('refreshtoken', res)
+      //           if (res.status === 200) {
+      //             context.store.commit('LOGIN_SUCCESS', res.data)
+      //             return config
+      //           }
+      //         }).catch(res => {
+      //           return Promise.reject(res.error)
+      //         })
+      //       }
+      //     } else {
+      //       context.redirect(
+      //         '/login',
+      //         {
+      //           redirect: context.route.fullPath
+      //         }
+      //       )
+      //     }
+      //   }
+      // }
       return config
     },
     err => {

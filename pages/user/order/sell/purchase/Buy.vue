@@ -159,8 +159,8 @@ export default {
             .putJson('/user/order/' + order.id, {
               id: order.id,
               state: '1',
-              buyTicket: this.orders[this.index].id + '_sbt',
-              buyTicketExplain: this.buyTicketExplain
+              'seller.buyTicket': this.orders[this.index].id + '_sbt',
+              'seller.buyTicketExplain': this.buyTicketExplain
             })
             .then(res => {
               if (res.data.Status) {

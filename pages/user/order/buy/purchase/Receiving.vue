@@ -138,7 +138,7 @@ export default {
       })
     }
   },
-  created () {
+  mounted () {
     this.$http.get('/user/orders', {type: 1, identity: 0, state: '^3'}).then(res => {
       if (res.data.Status) {
         this.orders = res.data.Data

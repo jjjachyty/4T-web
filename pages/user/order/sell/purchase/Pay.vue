@@ -11,49 +11,21 @@
                 <v-layout row wrap>
 
                     <v-flex xs12>
-                        <v-layout row justify-center align-center>
-                            <v-flex xs4 md2>
-                                <v-avatar size="30">
-                                    <img :src="avatarRoot+order.buyer.id">
-                                </v-avatar>{{order.buyer.name}}<v-icon small>keyboard_arrow_right</v-icon>
-                            </v-flex>
-                            <v-flex offset-xs5 xs3 md3>
-                                <span class=" font-weight-bold">
-                                    <span class=" deep-orange--text"> ¥{{order.strikePrice}}</span>
-                                </span>/
-                                <small class=" deep-orange--text">代费¥{{order.charge}}</small>
-                            </v-flex>
-                            <v-flex xs2 md2>
-                                <small class="caption red--text font-weight-bold">{{order.state | dict('orderState')}}</small>
-                            </v-flex>
-                        </v-layout>
+                                                <Top :order="order"></Top>
+
                     </v-flex>
-                    <!-- <router-link :to="order.originalLink" class="grey lighten-5"> -->
+         
                     <v-flex xs12>
                         <v-divider></v-divider>
+                        <router-link :to="order.originalLink" class="grey lighten-5">
                         <v-card-text>
 
-                            <v-layout row v-for="pd in order.products" :key="pd.id">
-                                <v-flex xs2>
-                                    <v-card-media height="70">
-                                        <img :src="purchaseRoot+pd.images">
-                                    </v-card-media>
-                                </v-flex>
-                                <v-flex xs10>
-                                    <v-layout row wrap class="caption grey--text" align-center justify-center>
-                                        <v-flex xs10>名称：{{pd.name}}</v-flex>
-                                        <v-flex xs2>
-                                            <span>数量:{{pd.quantity}}</span>
-                                        </v-flex>
-                                        <v-flex xs10>购买渠道:{{pd.shopName}}</v-flex>
-                                        <v-flex xs2>¥{{pd.price}}</v-flex>
-                                    </v-layout>
+                                                                     <Product :products="order.products"></Product>
 
-                                </v-flex>
-                            </v-layout>
                         </v-card-text>
+                                      </router-link>
                     </v-flex>
-                    <!-- </router-link> -->
+      
                     <v-flex xs12>
                         <v-divider></v-divider>
                         <v-card-actions>
@@ -101,7 +73,13 @@
     </v-app>
 </template>
 <script>
+import Top from './Top'
+import Product from './Product'
 export default {
+  components: {
+    Top,
+    Product
+  },
   data () {
     return {
       showDelete: false,
@@ -122,7 +100,7 @@ export default {
           id: order.id,
           type: '1',
           state: '-1',
-          'seller.cancelReason': this.reason
+          seller: {cancelReason: this.reason}
         })
         .then(res => {
           if (res.data.Status) {

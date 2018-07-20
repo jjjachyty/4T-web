@@ -32,6 +32,7 @@
 </template>
 
 <script>
+import { setToken } from '~/utils/auth'
 import { mapActions, mapGetters } from 'vuex'
 import { validationMixin } from 'vuelidate'
 import {
@@ -94,20 +95,8 @@ export default {
             console.log('res----', res.data.Error)
             this.$store.commit('ERROR', res.data.Error.Err)
           } else {
-            this.$store.commit('LOGIN_SUCCESS', res.data) // 登陆成功
-
-            // 获取用户信息
-            if (this.$store.state.auth.token && !this.$store.state.User.user.id) {
-              this.$http.get('/user/info', { type: 'profile' }).then(res => {
-                // 初始化用户基本信息
-                if (res.data.Status) {
-                  this.user = res.data.Data
-                  this.$store.commit('GET_USER_PROFILE_SUCCESS', res.data.Data)
-                } else {
-                  this.$store.commit('ERROR', res.data.Error.Err)
-                }
-              })
-            }
+            // this.$store.commit('LOGIN_SUCCESS', res.data) // 登陆成功
+            setToken(res.data.token)
 
             var path = this.$route.query.redirect || '/'
             this.$router.push(path)

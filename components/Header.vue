@@ -37,7 +37,7 @@
           <v-menu v-else offset-y class="menu">
             <v-toolbar-title slot="activator">
               <v-avatar size="40">
-                <img :src="$store.state.User.user.avatar+'?'+Number(new Date())" />
+                <img :src="avatarRoot+ user.id+'?'+Number(new Date())" />
               </v-avatar>
             </v-toolbar-title>
             <v-list>
@@ -117,7 +117,7 @@ export default {
   },
   computed: {
     ...mapState({
-      user: state => state.User.user
+      user: state => state.user
     })
   },
   methods: {
@@ -136,7 +136,7 @@ export default {
 
   },
   mounted () {
-    if (this.$store.state.auth.token) {
+    if (this.$store.state.token !== '') {
       this.$http.get('/user/msg/news', {})
         .then(res => {
           if (res.data.Status) {

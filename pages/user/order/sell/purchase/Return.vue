@@ -1,7 +1,7 @@
 <template>
     <v-app >
 
-         <div v-if="orders.length < 1" class="text-xs-center"><small class="grey--text">暂无待发货的订单</small></div>
+         <div v-if="orders.length < 1" class="text-xs-center"><small class="grey--text">暂无退货退款的订单</small></div>
                <div v-else v-for="(order,index) in orders" :key="order.id" class="grey lighten-5">
                    <br>
                 <v-card >
@@ -81,7 +81,7 @@
           
           </div>
 <v-container class="caption grey--text">
-<v-layout>
+<v-layout wrap>
         <v-flex>
             <v-card-media height="70" xs3>
                       <img :src="purchaseRoot+order.buyer.returnTicket">
@@ -91,7 +91,15 @@
     <v-flex xs9>
         {{order.buyer.returnReason}}
     </v-flex>
-
+   <v-flex xs12 v-if="order.state == '510'">
+       <v-divider></v-divider>
+       <v-subheader>退货地址</v-subheader>
+       <v-layout row wrap>
+           <v-flex>收货人:{{order.seller.returnAddress.userName}}</v-flex>
+           <v-flex>电话:{{order.seller.returnAddress.phone}}</v-flex>
+           <v-flex xs12>地址:{{order.seller.returnAddress.province}}{{order.seller.returnAddress.city}}{{order.seller.returnAddress.county}}{{order.seller.returnAddress.street}}</v-flex>
+       </v-layout>
+   </v-flex>
 </v-layout>
 </v-container>
                         
@@ -102,18 +110,19 @@
                         <v-flex>
                             <v-card-actions>
                                 <v-spacer></v-spacer>
-                                <v-btn small outline color="secondary" v-if="order.state != '500'" @click="refuse(index)">拒绝</v-btn>
-                                <v-btn small outline v-if="order.state != '51'" color="secondary" @click="returnMoney(index)">仅退款</v-btn>
-                                <v-btn small outline v-if="order.state != '50'" color="primary" @click="showReturnProduct(index)" >退货</v-btn>
+                                <v-btn small outline color="secondary" v-if="order.state == '50' || order.state == '51'" @click="refuse(index)">拒绝</v-btn>
+                                <v-btn small outline v-if="order.state == '50'" color="secondary" @click="returnMoney(index)">仅退款</v-btn>
+                                <v-btn small outline v-if="order.state == '51'" color="primary" @click="showReturnProduct(index)" >退货</v-btn>
                             </v-card-actions>
                             <v-card-text v-if="showReturn">
-                                <v-card>
+                                <v-card flat>
                                      <v-autocomplete
-              v-model="receivingAddress"
+              v-model="returnAddress"
               :items="address"
+              ref="returnAddress"
               color="blue-grey lighten-2"
               label="收货地址"
-                    :rules="[v => !!v || '不能为空']"
+               :rules="[v => !!v.phone || '不能为空']"
             no-data-text="请前往设置->收货地址中添加"
               
             >
@@ -127,8 +136,14 @@
                   class="chip--select-multi"
                   @input="data.parent.selectItem(data.item)"
                 > -->
-                  <small class="grey--text">{{data.item.userName}}</small><br>
-                 <small>{{data.item.province}}{{data.item.city}}{{data.item.county}}</small>
+                 
+                
+                 <v-list two-line="">
+                     <v-list-tile-content>
+              <v-list-tile-title> <small class="grey--text">{{data.item.userName}}</small>-<small class="grey--text">{{data.item.phone}}</small></v-list-tile-title>
+              <v-list-tile-sub-title> <small>{{data.item.province}}{{data.item.city}}{{data.item.county}}{{data.item.street}}</small></v-list-tile-sub-title>
+            </v-list-tile-content>
+                 </v-list>
                 <!-- </v-chip> -->
               </template>
               <template
@@ -143,7 +158,7 @@
                           <v-flex>
                               <v-layout>
                                   <v-flex>
-                                       <v-list-tile-title>{{data.item.userName}}{{data.item.phone}}</v-list-tile-title>
+                                       <v-list-tile-title>{{data.item.userName}}-{{data.item.phone}}</v-list-tile-title>
                     <v-list-tile-sub-title>{{data.item.province}}{{data.item.city}}{{data.item.county}}</v-list-tile-sub-title>
                                   </v-flex>
                               </v-layout>
@@ -180,7 +195,7 @@ export default {
     return {
       orders: [],
       index: null,
-      receivingAddress: {},
+      returnAddress: {},
       showReturn: false,
       address: [],
       expand: [false, false, false, true]
@@ -231,24 +246,30 @@ export default {
     },
     returnProduct () {
       var order = this.orders[this.index]
-      this.$http
-        .putJson('/user/order/' + order.id, {
-          id: order.id,
-          state: '510'
-        })
-        .then(res => {
-          if (res.data.Status) {
-            this.$store.commit(
-              'SUCCESS',
-              '处理退货请求成功'
-            )
-            this.orders[this.index].state = '501'
-          } else {
-            this.$store.commit('ERROR', res.data.Error.Err)
-          }
-        })
+      if (this.$refs.returnAddress[0].validate()) {
+        this.$http
+          .putJson('/user/order/' + order.id, {
+            id: order.id,
+            state: '510',
+            seller: {returnAddress: this.returnAddress}
+          })
+          .then(res => {
+            if (res.data.Status) {
+              this.$store.commit(
+                'SUCCESS',
+                '处理退货请求成功'
+              )
+              this.orders[this.index].state = '510'
+              this.orders[this.index].seller.receivingAddress = this.returnAddress
+              this.showReturn = false
+            } else {
+              this.$store.commit('ERROR', res.data.Error.Err)
+            }
+          })
+      } else {
+        this.$refs.returnAddress[0].error = true
+      }
     }
-
   },
   created () {
     this.$http.get('/user/orders', {type: 1, identity: 1, state: '^5'}).then(res => {

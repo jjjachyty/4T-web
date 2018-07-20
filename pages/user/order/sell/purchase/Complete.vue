@@ -1,7 +1,7 @@
 <template>
     <v-app >
 
-         <div v-if="orders.length < 1" class="text-xs-center"><small class="grey--text">暂无待发货的订单</small></div>
+         <div v-if="orders.length < 1" class="text-xs-center"><small class="grey--text">暂无已完成的订单</small></div>
                <div v-else v-for="(order,index) in orders" :key="order.id" class="grey lighten-5">
                    <br>
                 <v-card >
@@ -45,16 +45,16 @@
                         
     </v-expansion-panel-content>
         <v-expansion-panel-content>
-      <div slot="header"><small class="font-weight-bold">物流信息<span class="red--text">{{order.express.state}}</span> </small></div>
+      <div slot="header"><small class="font-weight-bold">物流信息<span class="red--text">{{order.buyer.express.state}}</span> </small></div>
                            <v-card raised  class="grey--text">
 <v-container>
                             <v-layout wrap>
-                                <v-flex><small>快递公司:{{order.express.name}}</small></v-flex>
-                                <v-flex><small>快递单号:{{order.express.number}}</small></v-flex>
-                                <v-flex><small>发货时间:{{order.express.createAt | formatDate("YYYY-MM-DD HH:mm:ss")}}</small></v-flex>
-                                <v-flex><small>物流到达:{{order.express.updateAt | formatDate("YYYY-MM-DD HH:mm:ss")}}到达{{order.express.arrivedAt}}</small></v-flex>
-                                <v-flex xs6><v-icon small>account</v-icon><small>派送员:{{order.express.courier}}</small></v-flex>
-                                <v-flex xs6><v-icon small>phone</v-icon><small>电话:<a :href="'tel:'+order.express.contactNumber">{{order.express.contactNumber}}</a></small></v-flex>
+                                <v-flex><small>快递公司:{{order.buyer.express.name}}</small></v-flex>
+                                <v-flex><small>快递单号:{{order.buyer.express.number}}</small></v-flex>
+                                <v-flex><small>发货时间:{{order.buyer.express.createAt | formatDate("YYYY-MM-DD HH:mm:ss")}}</small></v-flex>
+                                <v-flex><small>物流到达:{{order.buyer.express.updateAt | formatDate("YYYY-MM-DD HH:mm:ss")}}到达{{order.buyer.express.arrivedAt}}</small></v-flex>
+                                <v-flex xs6><v-icon small>account</v-icon><small>派送员:{{order.buyer.express.courier}}</small></v-flex>
+                                <v-flex xs6><v-icon small>phone</v-icon><small>电话:<a :href="'tel:'+order.buyer.express.contactNumber">{{order.buyer.express.contactNumber}}</a></small></v-flex>
 
                             </v-layout>
 </v-container>

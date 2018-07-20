@@ -3,6 +3,12 @@ const resolve = (dir) => require('path').join(__dirname, dir)
 
 module.exports = {
   /*
+  ** Router config
+  */
+  router: {
+    middleware: 'auth'
+  },
+  /*
      ** Headers of the page
      */
   head: {

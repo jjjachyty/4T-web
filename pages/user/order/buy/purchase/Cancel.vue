@@ -77,11 +77,11 @@
                 <v-expansion-panel-content>
       <div slot="header">
          
-              <small class="font-weight-bold">取消原因</small>
-          
+              <div class="font-weight-bold"><span class="red--text"><v-spacer></v-spacer> <small v-if="order.buyer.cancelReason">买家取消</small><small v-else>卖家取消</small></span>
+            </div>
           </div>
 <v-container class="caption grey--text">
-{{order.seller.cancelReason}}
+{{order.buyer.cancelReason}}
 </v-container>
                         
     </v-expansion-panel-content>
@@ -104,9 +104,9 @@ export default {
     }
   },
   methods: {},
-  created () {
+  mounted () {
     this.$http
-      .get('/user/orders', { type: 1, identity: 1, state: '-1' })
+      .get('/user/orders', { type: 1, identity: 0, state: '-1' })
       .then(res => {
         if (res.data.Status) {
           this.orders = res.data.Data

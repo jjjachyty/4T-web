@@ -26,6 +26,7 @@ const quotationType = {
   '1': '待支付'
 }
 const orderState = {
+  '-1': '取消/关闭',
   0: '待付款',
   1: '待购买',
   2: '待发货',

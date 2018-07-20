@@ -20,13 +20,17 @@
             <v-card>
             <v-tabs grow v-model="identity">
       <v-tabs-slider color="deep-orange"></v-tabs-slider>
-            <v-tab @click="identity = 0" ><v-icon small>add_shopping_cart</v-icon>我是买家</v-tab>
-            <v-tab @click="identity = 1" ><v-icon small>shopping_cart</v-icon>我是卖家</v-tab>
+            <v-tab @click="identity = 0" href="#buyer"><v-icon small>add_shopping_cart</v-icon>我是买家</v-tab>
+            <v-tab @click="identity = 1" href="#seller"><v-icon small>shopping_cart</v-icon>我是卖家</v-tab>
+            <v-tab-item id="buyer">
+       <BuyPurchase></BuyPurchase>
+            </v-tab-item>
+                        <v-tab-item id="seller">
+<SellPurchase></SellPurchase>
+            </v-tab-item>
         </v-tabs>
         </v-card>
-        <v-divider></v-divider>
-       <BuyPurchase v-if="active == 0"></BuyPurchase>
-<SellPurchase v-if="active == 1"></SellPurchase>
+
         </v-flex>
     </v-layout>
 
@@ -42,7 +46,7 @@ export default {
     BuyPurchase,
     SellPurchase
   },
-
+  middleware: 'authenticated',
   data () {
     return {
       tab: null,

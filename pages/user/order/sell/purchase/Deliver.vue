@@ -1,7 +1,7 @@
 <template>
   <v-app>
     <div v-if="orders.length < 1" class="text-xs-center">
-      <small class="grey--text">暂无待购买的订单</small>
+      <small class="grey--text">暂无要发货的订单</small>
     </div>
     <div v-else v-for="(order,index) in orders" :key="order.id" class="grey lighten-5">
       <br>

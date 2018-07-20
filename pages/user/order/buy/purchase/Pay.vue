@@ -11,48 +11,13 @@
                 <v-layout row wrap>
 
                     <v-flex xs12>
-                        <v-layout row justify-center align-center>
-                            <v-flex xs2 md1>
-                                <v-avatar size="30">
-                                    <img :src="avatarRoot+order.sellBy">
-                                </v-avatar>
-                            </v-flex>
-                            <v-flex xs5 md8>{{order.seller}}
-                                <v-icon small>keyboard_arrow_right</v-icon>
-                            </v-flex>
-                            <v-flex xs3>
-                                <span class="caption font-weight-bold">代购费
-                                    <small class=" deep-orange--text">¥{{order.charge}}</small>
-                                </span>
-                            </v-flex>
-                            <v-flex xs2>
-                                <small class="caption red--text font-weight-black">{{order.state | dict('orderState')}}</small>
-                            </v-flex>
-                        </v-layout>
+                      <Header :order="order"></Header>
                     </v-flex>
                     <!-- <router-link :to="order.originalLink" class="grey lighten-5"> -->
                     <v-flex xs12>
                         <v-divider></v-divider>
                         <v-card-text>
-
-                            <v-layout row v-for="pd in order.products" :key="pd.id">
-                                <v-flex xs2>
-                                    <v-card-media height="70">
-                                        <img :src="purchaseRoot+pd.images">
-                                    </v-card-media>
-                                </v-flex>
-                                <v-flex xs10>
-                                    <v-layout row wrap class="caption grey--text" align-center justify-center>
-                                        <v-flex xs10>名称：{{pd.name}}</v-flex>
-                                        <v-flex xs2>
-                                            <span>数量:{{pd.quantity}}</span>
-                                        </v-flex>
-                                        <v-flex xs10>购买渠道:{{pd.shopName}}</v-flex>
-                                        <v-flex xs2>¥{{pd.price}}</v-flex>
-                                    </v-layout>
-
-                                </v-flex>
-                            </v-layout>
+                            <Product :products="order.products"></Product>
                         </v-card-text>
                     </v-flex>
                     <!-- </router-link> -->
@@ -100,8 +65,13 @@
     </v-app>
 </template>
 <script>
+import Header from './Header'
+import Product from './Product'
 export default {
-
+  components: {
+    Header,
+    Product
+  },
   data () {
     return {
       showCancel: false,
@@ -114,16 +84,14 @@ export default {
   methods: {
     cancel (index) {
       var order = this.orders[index]
-      if (this.reason == '其他') {
-        if (this.otherReason == null) {
-          this.$store.commit('ERROR', '请填写其他原因说明')
-          return
-        } else {
-          this.reason = this.otherReason
-        }
+      if (this.reason === '其他' && this.otherReason === '') {
+        this.$store.commit('ERROR', '请填写其他原因说明')
+        return
+      } else {
+        this.reason = this.otherReason
       }
 
-      this.$http.putJson('/user/order/' + order.id, {id: order.id, type: '1', state: '0', cancelReason: this.reason}).then(res => {
+      this.$http.putJson('/user/order/' + order.id, {id: order.id, type: '1', state: '0', buyer: {cancelReason: this.reason}}).then(res => {
         if (res.data.Status) {
           this.$store.commit('SUCCESS', '取消订单成功')
           this.orders.splice(index, 1)

@@ -111,7 +111,7 @@ export default {
       this.index = index
     }
   },
-  created () {
+  mounted () {
     this.$http.get('/user/orders', {type: 1, identity: 0, state: '^1'}).then(res => {
       if (res.data.Status) {
         this.orders = res.data.Data
