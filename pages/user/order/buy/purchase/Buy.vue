@@ -6,34 +6,15 @@
                 <v-card raised>
                     <v-layout row wrap >
                                                 <v-flex xs12 >
-                           <v-layout row align-center justify-center>
-                            <v-flex xs2 md1><v-avatar size="30"><img :src="avatarRoot+order.sellBy"></v-avatar></v-flex>
-                            <v-flex xs9 md9>{{order.seller}}<v-icon small>keyboard_arrow_right</v-icon></v-flex>  
-                            <v-flex xs2 md1><small class="font-weight-black">¥{{order.strikePrice}}</small></v-flex>
-                            <v-flex xs2 md1><small class="caption red--text font-weight-black">{{order.state | dict('orderState')}}</small></v-flex> 
-                            </v-layout>
-                            <v-divider></v-divider>
+                                                 <Header :order="order"></Header>
+
                         </v-flex>
                                                 <router-link :to="order.originalLink" class="grey lighten-5">
 
                         <v-flex xs12 md12>
                             <v-card-text>
-                            <v-layout row v-for="pd in order.products" :key="pd.id">
-                        <v-flex xs2 md2>
-                            <v-card-media height="70">
-                                <img :src="purchaseRoot+pd.images" >
-                            </v-card-media>
-                        </v-flex>
-                        <v-flex xs10 md10>
-                            <v-layout row wrap class="caption grey--text" align-center justify-center>
-                                <v-flex xs10>名称：{{pd.name}}</v-flex>
-                                <v-flex xs2><span>数量:{{pd.quantity}}</span></v-flex>
-                                <v-flex xs10>购买渠道:{{pd.shopName}}</v-flex>
-                                <v-flex xs2>¥{{pd.price}}</v-flex>
-                            </v-layout>
-                            
-                        </v-flex>
-                            </v-layout>
+                                                       <Product :products="order.products"></Product>
+
                             </v-card-text>
                         </v-flex>
 </router-link>
@@ -74,56 +55,68 @@
     </v-app>
 </template>
 <script>
+import Header from "./Header";
+import Product from "./Product";
 export default {
-
-  data () {
+  components: {
+    Header,
+    Product
+  },
+  data() {
     return {
       otherReason: null,
-      reason: '我不想要了',
+      reason: "我不想要了",
       showCancel: false,
       index: null,
       ticket: {},
       orders: []
-    }
+    };
   },
   methods: {
-    cancel (index) {
-      var order = this.orders[index]
-      if (this.reason == '其他') {
+    cancel(index) {
+      var order = this.orders[index];
+      if (this.reason == "其他") {
         if (this.otherReason == null) {
-          this.$store.commit('ERROR', '请填写其他原因说明')
-          return
+          this.$store.commit("ERROR", "请填写其他原因说明");
+          return;
         } else {
-          this.reason = this.otherReason
+          this.reason = this.otherReason;
         }
       }
 
-      this.$http.putJson('/user/order/' + order.id, {id: order.id, state: '-1', cancelReason: this.reason}).then(res => {
-        if (res.data.Status) {
-          this.$store.commit('SUCCESS', '取消订单成功')
-          this.orders.splice(index, 1)
-        } else {
-          this.$store.commit('ERROR', res.data.Error.Err)
-        }
-      })
+      this.$http
+        .putJson("/user/order/" + order.id, {
+          id: order.id,
+          state: "-1",
+          buyer: { cancelReason: this.reason }
+        })
+        .then(res => {
+          if (res.data.Status) {
+            this.$store.commit("SUCCESS", "取消订单成功");
+            this.orders.splice(index, 1);
+          } else {
+            this.$store.commit("ERROR", res.data.Error.Err);
+          }
+        });
     },
-    remind (index) {
-      this.index = index
+    remind(index) {
+      this.index = index;
     }
   },
-  mounted () {
-    this.$http.get('/user/orders', {type: 1, identity: 0, state: '^1'}).then(res => {
-      if (res.data.Status) {
-        this.orders = res.data.Data
-      }
-    })
+  mounted() {
+    this.$http
+      .get("/user/orders", { type: 1, identity: 0, state: "^1" })
+      .then(res => {
+        if (res.data.Status) {
+          this.orders = res.data.Data;
+        }
+      });
   }
-}
+};
 </script>
 <style scoped>
-.image{
-    width: 50%;
-    height: 100px;
+.image {
+  width: 50%;
+  height: 100px;
 }
-
 </style>

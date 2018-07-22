@@ -29,7 +29,7 @@
                                 <v-icon small v-if="showCancel">keyboard_arrow_down</v-icon>
                                 <v-icon small v-else>keyboard_arrow_up</v-icon>
                             </v-btn>
-                            <v-btn small outline color="deep-orange">¥{{order.strikePrice}}去付款</v-btn>
+                            <v-btn small outline color="deep-orange" @click="pay(index)">¥{{order.strikePrice}}付款</v-btn>
                         </v-card-actions>
                         <v-divider></v-divider>
 
@@ -57,6 +57,23 @@
                                 </v-card-actions>
                             </v-card>
                         </v-container>
+
+                        <v-dialog persistent v-model="showWxpay" max-width="290">
+                            
+                            <v-card class="text-xs-center">
+                            <v-card-title class="green white--text">请使用微信扫码支付</v-card-title>
+                            <v-card-text>
+                                                            <qrcode v-model="wxPayCode" :options="{ size: 200 }"></qrcode>
+
+                            </v-card-text>
+                            <v-divider></v-divider>
+                            <v-card-actions>
+                                <v-btn outline color="teal" small @click="checkPay">我已支付</v-btn>
+                                <v-spacer></v-spacer>
+                                <v-btn outline small color="secondary" @click="showWxpay = false">取消</v-btn>
+                            </v-card-actions>
+                            </v-card>
+                        </v-dialog>
                     </v-flex>
                 </v-layout>
 
@@ -65,48 +82,96 @@
     </v-app>
 </template>
 <script>
-import Header from './Header'
-import Product from './Product'
+import Header from "./Header";
+import Product from "./Product";
 export default {
   components: {
     Header,
     Product
   },
-  data () {
+  data() {
     return {
+      showWxpay: false,
       showCancel: false,
       orders: [],
-      reason: '我不想要了',
+      reason: "我不想要了",
       index: null,
+      wxPayCode: null,
       otherReason: null
-    }
+    };
   },
   methods: {
-    cancel (index) {
-      var order = this.orders[index]
-      if (this.reason === '其他' && this.otherReason === '') {
-        this.$store.commit('ERROR', '请填写其他原因说明')
-        return
+    cancel(index) {
+      var order = this.orders[index];
+      if (this.reason === "其他" && this.otherReason === "") {
+        this.$store.commit("ERROR", "请填写其他原因说明");
+        return;
       } else {
-        this.reason = this.otherReason
+        this.reason = this.otherReason;
       }
 
-      this.$http.putJson('/user/order/' + order.id, {id: order.id, type: '1', state: '0', buyer: {cancelReason: this.reason}}).then(res => {
+      this.$http
+        .putJson("/user/order/" + order.id, {
+          id: order.id,
+          type: "1",
+          state: "0",
+          buyer: { cancelReason: this.reason }
+        })
+        .then(res => {
+          if (res.data.Status) {
+            this.$store.commit("SUCCESS", "取消订单成功");
+            this.orders.splice(index, 1);
+          } else {
+            this.$store.commit("ERROR", res.data.Error.Err);
+          }
+        });
+    },
+    pay(index) {
+      this.index = index;
+      this.$http.post("/pay/wx/get/" + this.orders[index].id, {}).then(res => {
         if (res.data.Status) {
-          this.$store.commit('SUCCESS', '取消订单成功')
-          this.orders.splice(index, 1)
+          if (
+            res.data.Data.ReturnCode == "SUCCESS" &&
+            res.data.Data.ResultCode == "SUCCESS"
+          ) {
+            this.showWxpay = true;
+            this.wxPayCode = res.data.Data.CodeURL;
+          } else {
+            this.$store.commit(
+              "ERROR",
+              res.data.Data.ReturnMsg + res.data.Data.ErrCodeDes
+            );
+          }
         } else {
-          this.$store.commit('ERROR', res.data.Error.Err)
+          this.$store.commit("ERROR", res.data.Error.Err);
         }
-      })
+      });
+      //this.showWxpay = true;
+    },
+    checkPay() {
+      this.$http
+        .get("/user/payment/" + this.orders[this.index].id, {})
+        .then(res => {
+          if (res.data.Status) {
+            //支付成功
+            this.$store.commit("SUCCESS", "支付成功");
+            this.showWxpay = false;
+            this.orders.splice(this.index, 1);
+          } else {
+            this.$store.commit("ERROR", "尚未收到支付金额");
+          }
+        });
     }
   },
-  mounted () {
-    this.$http.get('/user/orders', {type: 1, identity: 0, state: '^0'}).then(res => {
-      if (res.data.Status) {
-        this.orders = res.data.Data
-      }
-    })
+
+  mounted() {
+    this.$http
+      .get("/user/orders", { type: 1, identity: 0, state: "^0" })
+      .then(res => {
+        if (res.data.Status) {
+          this.orders = res.data.Data;
+        }
+      });
   }
-}
+};
 </script>

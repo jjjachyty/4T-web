@@ -3,8 +3,8 @@ const resolve = (dir) => require('path').join(__dirname, dir)
 
 module.exports = {
   /*
-  ** Router config
-  */
+     ** Router config
+     */
   router: {
     middleware: 'auth'
   },
@@ -97,7 +97,14 @@ module.exports = {
         //   loader: 'eslint-loader',
         //   exclude: /(node_modules)/
         // })
+        config.node = {
+          console: true,
+          fs: 'empty',
+          net: 'empty',
+          tls: 'empty'
+        }
       }
+
       if (ctx.isServer) {
         config.externals = [
           nodeExternals({
