@@ -42,56 +42,56 @@
  </v-app>
 </template>
 <script>
-import { mapActions, mapGetters } from "vuex";
-import Header from "~/components/Header";
+import { mapActions, mapGetters } from 'vuex'
+import Header from '~/components/Header'
 export default {
   components: {
     Header
   },
-  data() {
+  data () {
     return {
       showSuggest: false,
       suggest: {}
-    };
+    }
   },
   computed: {
     ...mapGetters({
-      snackbar: "checkSnackbar"
+      snackbar: 'checkSnackbar'
     })
   },
   methods: {
-    addSuggest() {
-      if (this.$store.state.auth.token != "") {
+    addSuggest () {
+      if (this.$store.state.auth.token != '') {
         if (this.suggest.length > 10 && this.suggest.length > 140) {
           this.$http
-            .post("/suggest", this.suggest)
+            .post('/suggest', this.suggest)
             .then(res => {
               if (res.data.Status) {
                 this.$store.commit(
-                  "SUCCESS",
-                  "我们已经收到，感谢您的意见与建议🙏"
-                );
-                this.showSuggest = false;
+                  'SUCCESS',
+                  '我们已经收到，感谢您的意见与建议🙏'
+                )
+                this.showSuggest = false
               }
             })
-            .catch(res => {});
+            .catch(res => {})
         } else {
-          this.$store.commit("INFO", "意见在10-140个字之间哦");
+          this.$store.commit('INFO', '意见在10-140个字之间哦')
         }
       } else {
-        this.$store.commit("INFO", "提意见之前别忘了先登录哦");
-        this.showSuggest = false;
+        this.$store.commit('INFO', '提意见之前别忘了先登录哦')
+        this.showSuggest = false
 
         this.$router.push({
-          name: "login",
+          name: 'login',
           query: {
             redirect: this.$router.currentRoute.fullPath
           }
-        });
+        })
       }
     }
   }
-};
+}
 </script>
 
 <style>
