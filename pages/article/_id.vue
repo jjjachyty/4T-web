@@ -6,7 +6,7 @@
         <v-card v-if="article.id">
             <v-avatar class="avatar-auth" size="70" color="grey lighten-4">
                 <img v-if="article.nickNamePublish" :src="'/avatar/'+article.nickName+'.png'" alt="avatar">
-                <img v-else :src="url+article.createUser" alt="avatar">
+                <img v-else :src="url+article.createBy" alt="avatar">
             </v-avatar>
 
             <v-icon small color="gray darken-2">date_range</v-icon>
@@ -86,7 +86,7 @@
             <v-card-text>
                 <v-card>
                     <v-card-text>
-                        <div v-if="'' != $store.state.auth.token">
+                        <div v-if="'' != $store.state.token">
 
                             <v-avatar v-if="newComment.anonymous" size="50" color="grey lighten-4">
                                 <img :src="'/avatar/'+$store.state.User.user.anNickName+'.png'">
@@ -378,7 +378,7 @@ export default {
     showReply(index) {
       var item = this.comments[index];
       this.replyIndex = index;
-      if (this.$store.state.auth.token) {
+      if (this.$store.state.token) {
         this.to = {
           replyCommentID: item.id,
           to: item.by,
@@ -397,7 +397,7 @@ export default {
       }
     },
     showTipOff(commentid) {
-      if (this.$store.state.auth.token) {
+      if (this.$store.state.token) {
         this.tipOffFlag = true;
         this.tipOff.articleID = this.article.id;
         this.tipOff.commintID = commentid;
@@ -466,28 +466,26 @@ export default {
   },
 
   created() {
-    if (this.$store.state.auth.token != "") {
-      // 获取我的点赞
-      this.$http
-        .get("/thumbups", {
-          articleID: id
-        })
-        .then(res => {
-          if (res.data.Status) {
-            this.thumbups = res.data.Data;
-            res.data.Data.forEach(item => {
-              console.log("item", item);
-              if (item.type == "1") {
-                this.thumbupFlag = false;
-              } else {
-                this.commentThumbup[item.commentID] = true;
-              }
-            });
-          } else {
-            this.$store.commit("ERROR", "获取点赞失败");
-          }
-        });
-    }
+    var id = this.article.id; // 获取我的点赞
+    this.$http
+      .get("/thumbups", {
+        articleID: id
+      })
+      .then(res => {
+        if (res.data.Status) {
+          this.thumbups = res.data.Data;
+          res.data.Data.forEach(item => {
+            console.log("item", item);
+            if (item.type == "1") {
+              this.thumbupFlag = false;
+            } else {
+              this.commentThumbup[item.commentID] = true;
+            }
+          });
+        } else {
+          this.$store.commit("ERROR", "获取点赞失败");
+        }
+      });
 
     // 获取评论
     this.$http

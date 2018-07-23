@@ -1,8 +1,10 @@
 import * as types from './mutation-types'
-import { unsetToken } from '~/utils/auth'
+import {
+  unsetToken
+} from '~/utils/auth'
 export const state = {
   // apiRoot: 'http://106.12.10.77:9090',
-  // avatarRoot: 'http://pa7c4jxbs.bkt.clouddn.com/',
+  avatarRoot: 'http://pa7c4jxbs.bkt.clouddn.com/',
   articleRoot: 'http://pa8topmtg.bkt.clouddn.com/',
   token: '',
   user: {},

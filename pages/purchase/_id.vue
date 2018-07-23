@@ -38,7 +38,7 @@
                 <v-flex xs4 md2>
                   <p>
                     <v-chip small color="red"  label class="white--text body-2">
-                      <div v-if="amount>0"><small class="caption">¥</small>{{item.amount}}
+                      <div v-if="item.amount>0"><small class="caption">¥</small>{{item.amount}}
                       </div>
                       <div v-else><small class="caption">求报价</small>
                       </div>
@@ -178,10 +178,10 @@
 </template>
 <script>
 // import 'viewerjs/dist/viewer.css'
-import QuotationList from './QuotationList'
-import QuotationDialog from './QuotationDialog'
-import DestinationUser from './DestinationUser'
-import DestinationPurchase from './DestinationPurchase'
+import QuotationList from "./QuotationList";
+import QuotationDialog from "./QuotationDialog";
+import DestinationUser from "./DestinationUser";
+import DestinationPurchase from "./DestinationPurchase";
 
 export default {
   components: {
@@ -191,7 +191,7 @@ export default {
     DestinationPurchase
   },
 
-  data () {
+  data() {
     return {
       dialog: false,
       refuseFlag: false,
@@ -203,70 +203,73 @@ export default {
         products: [],
         charge: 0
       }
-    }
+    };
   },
   methods: {
-    goPurchase () {
-      if (this.$store.state.auth.token) {
-        this.dialog = true
+    goPurchase() {
+      if (this.$store.state.token) {
+        this.dialog = true;
       } else {
-        this.$store.commit('INFO', '请先登录后再代购哦')
+        this.$store.commit("INFO", "请先登录后再代购哦");
         this.$router.replace({
-          name: 'login',
+          name: "login",
           query: { redirect: this.$router.currentRoute.fullPath }
-        })
+        });
       }
     },
-    closeDialog (data) {
-      this.dialog = false
+    closeDialog(data) {
+      this.dialog = false;
     },
-    updateOrders (data, index) {
+    updateOrders(data, index) {
       if (index) {
-        this.item.quotationOrders[index] = data
+        this.item.quotationOrders[index] = data;
       } else {
-        this.item.quotationOrders.push(data)
+        this.item.quotationOrders.push(data);
       }
     },
-    purchase (quotation) {
-    }
+    purchase(quotation) {}
   },
   computed: {
-    purchaseFlag: function () {
-      var flag = true
+    purchaseFlag: function() {
+      var flag = true;
       if (this.item.createBy == this.$store.state.User.user.id) {
-        flag = false
+        flag = false;
       }
 
       this.item.quotationOrders.forEach(pd => {
         if (pd.createBy == this.$store.state.User.user.id) {
-          flag = false
+          flag = false;
         }
-      })
-      return flag
+      });
+      return flag;
     }
   },
-  mounted () {
-    this.quotationOrder.products = JSON.parse(JSON.stringify(this.item.products))
+  mounted() {
+    this.quotationOrder.products = JSON.parse(
+      JSON.stringify(this.item.products)
+    );
   },
-  asyncData (context) {
-    var item = {}
-    return context.$http.get('/purchase', { id: context.params.id }).then(res => {
-      if (res.data.Status) {
-        item = res.data.Data
-        var productNames = new Array()
-        item.products.forEach(element => {
-          productNames.push(element.name)
-        })
+  asyncData(context) {
+    var item = {};
+    return context.$http
+      .get("/purchase", { id: context.params.id })
+      .then(res => {
+        if (res.data.Status) {
+          item = res.data.Data;
+          var productNames = new Array();
+          item.products.forEach(element => {
+            productNames.push(element.name);
+          });
 
-        context.app.head.title = item.destination + '代购' + productNames
-        return {item: item}
-      }
-    }).catch(res => {
-      context.error({statusCode: 401, message: res})
-    })
+          context.app.head.title = item.destination + "代购" + productNames;
+          return { item: item };
+        }
+      })
+      .catch(res => {
+        context.error({ statusCode: 401, message: res });
+      });
   }
-
-}
+};
 </script>
 <style scoped>
 /* .img-detail{

@@ -45,19 +45,19 @@ export const getUserFromCookie = (req) => {
 export const getTokenFromCookie = (req) => {
   if (!req.headers.cookie) return
   const jwtCookie = req.headers.cookie.split(';').find(c => c.trim().startsWith('jwt='))
-  if (!jwtCookie) return
+  if (!jwtCookie) return ''
   const jwt = jwtCookie.split('=')[1]
   return jwt
 }
 export const getUserFromLocalStorage = () => {
   const json = window.localStorage.user
 
-  return json ? JSON.parse(json) : undefined
+  return json ? JSON.parse(json) : 'undefined'
 }
 
 export const getTokenFromLocalStorage = () => {
   const token = window.localStorage.token
-  return token || undefined
+  return token || ''
 }
 
 export const setSecret = (secret) => window.localStorage.setItem('secret', secret)
