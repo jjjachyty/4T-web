@@ -18,7 +18,7 @@
      <v-layout>
         <v-flex xs12 md6 offset-md3>
             <v-card>
-            <v-tabs grow v-model="identity">
+            <v-tabs grow v-model="identity" fixed-tabs>
       <v-tabs-slider color="deep-orange"></v-tabs-slider>
             <v-tab @click="identity = 0" href="#buyer"><v-icon small>add_shopping_cart</v-icon>我是买家</v-tab>
             <v-tab @click="identity = 1" href="#seller"><v-icon small>shopping_cart</v-icon>我是卖家</v-tab>

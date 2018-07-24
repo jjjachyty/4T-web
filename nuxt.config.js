@@ -1,5 +1,5 @@
 const nodeExternals = require('webpack-node-externals')
-const resolve = (dir) => require('path').join(__dirname, dir)
+// const resolve = (dir) => require('path').join(__dirname, dir)
 
 module.exports = {
   /*
@@ -12,7 +12,7 @@ module.exports = {
      ** Headers of the page
      */
   head: {
-    title: '4T 旅游 曝光 代购 转卖 旅拍',
+    title: '旅游 曝光 海淘 代购 转卖 旅拍-4T ForTravel 为美好旅行',
     meta: [{
       charset: 'utf-8'
     },
@@ -34,6 +34,10 @@ module.exports = {
     {
       rel: 'stylesheet',
       href: 'https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons'
+    },
+    {
+      rel: 'stylesheet',
+      href: 'https://use.fontawesome.com/releases/v5.1.1/css/all.css'
     }
     ]
   },

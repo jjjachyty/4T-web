@@ -2,7 +2,7 @@
 <v-app> 
 
 <nuxt/>
-
+<Footer></Footer>
          <v-snackbar v-if="snackbar.show"
       :timeout="snackbar.timeout"
       :color="snackbar.color"
@@ -15,14 +15,7 @@
           <!-- <v-btn dark flat @click="snackbar.show = false">关闭</v-btn> -->
 
     <br>
-           <v-footer  class="footer">
-            <v-spacer></v-spacer>
-            渝ICP备 18009430
-      &copy; 2018 4T(For Travel)
-     <a @click="showSuggest=true">意见反馈</a>
-                            <v-spacer></v-spacer>
 
-    </v-footer> 
 
           <v-dialog v-model="showSuggest" v-if="showSuggest" max-width="290">
       <v-card>
@@ -42,51 +35,54 @@
  </v-app>
 </template>
 <script>
-import { mapActions, mapGetters } from "vuex";
-
+import { mapActions, mapGetters } from 'vuex'
+import Footer from '~/components/Footer'
 export default {
-  data() {
+  components: {
+    Footer
+  },
+  data () {
     return {
       showSuggest: false,
       suggest: {}
-    };
+    }
   },
   computed: {
     ...mapGetters({
-      snackbar: "checkSnackbar"
+      snackbar: 'checkSnackbar'
     })
   },
   methods: {
-    addSuggest() {
-      if (this.$store.state.token != "") {
+    addSuggest () {
+      if (this.$store.state.token != '') {
         if (this.suggest.length > 10 && this.suggest.length > 140) {
           this.$http
-            .post("/suggest", this.suggest)
+            .post('/suggest', this.suggest)
             .then(res => {
               if (res.data.Status) {
                 this.$store.commit(
-                  "SUCCESS",
-                  "我们已经收到，感谢您的意见与建议🙏"
-                );
-                this.showSuggest = false;
+                  'SUCCESS',
+                  '我们已经收到，感谢您的意见与建议🙏'
+                )
+                this.showSuggest = false
               }
             })
-            .catch(res => {});
+            .catch(res => {})
         } else {
-          this.$store.commit("INFO", "意见在10-140个字之间哦");
+          this.$store.commit('INFO', '意见在10-140个字之间哦')
         }
       } else {
-        this.$store.commit("INFO", "提意见之前别忘了先登录哦");
-        this.showSuggest = false;
+        this.$store.commit('INFO', '提意见之前别忘了先登录哦')
+        this.showSuggest = false
 
         this.$router.push({
-          name: "login",
+          name: 'login',
           query: { redirect: this.$router.currentRoute.fullPath }
-        });
+        })
       }
     }
   }
-};
+}
 </script>
 
 <style>
