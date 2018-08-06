@@ -113,11 +113,11 @@
                             </v-toolbar>
                         <v-card v-for="(pd,index) in purchaseData.products" :key="pd.id">
                             <v-layout row wrap align-center justify-end>
-                                <v-flex  xs12  md3 class="text-xs-center">
+                                <v-flex  xs12  md4 class="text-xs-center">
                                 <croppa initial-size="contain" :prevent-white-space="true" v-model="productsImages[index]" @image-remove="handleRemoveImage(pd)" :initial-image="purchaseRoot+pd.images+'?'+Number(new Date())" :accept="'image/*'"    :file-size-limit="1024000"  placeholder="上传商品图片">
                                 </croppa>
                                 </v-flex>
-                                <v-flex xs12 md9>
+                                <v-flex xs12 md8>
                                     <v-layout row wrap>
                                         <v-flex xs6 md3>
                                             <v-text-field  v-model="pd.name" :rules="[v => !!v || '不能为空']" label="名称" placeholder="商品名称"></v-text-field>
@@ -154,139 +154,170 @@
     </v-app>
 </template>
 <script>
-import ObjectID from 'bson-objectid'
+import ObjectID from "bson-objectid";
 export default {
-
-  data () {
+  data() {
     return {
       valid: false,
       productsImages: [],
       valid: false,
       address: [],
       destination: null,
-      defaultAddress: '',
-      purchaseData: {address: null, destination: '', products: []}
-
-    }
+      defaultAddress: "",
+      purchaseData: { address: null, destination: "", products: [] }
+    };
   },
   computed: {
-    amount: function () {
-      var amount = 0.0
+    amount: function() {
+      var amount = 0.0;
       for (const key in this.purchaseData.products) {
         if (this.purchaseData.products.hasOwnProperty(key)) {
-          amount += Number(this.purchaseData.products[key].price * this.purchaseData.products[key].quantity)
+          amount += Number(
+            this.purchaseData.products[key].price *
+              this.purchaseData.products[key].quantity
+          );
         }
       }
 
-      return amount
-    }},
+      return amount;
+    }
+  },
   methods: {
-    handleRemoveImage (pd) {
-      pd.images = ''
+    handleRemoveImage(pd) {
+      pd.images = "";
     },
-    addProduct () {
-      this.purchaseData.products.push({id: ObjectID(), name: '', quantity: 0, price: 0, images: '', shopName: '', describe: ''})
+    addProduct() {
+      this.purchaseData.products.push({
+        id: ObjectID(),
+        name: "",
+        quantity: 0,
+        price: 0,
+        images: "",
+        shopName: "",
+        describe: ""
+      });
     },
-    save () {
+    save() {
       if (this.$refs.form.validate()) {
         this.handerProductImgs().then(res => {
-          this.purchaseData.amount = this.amount
+          this.purchaseData.amount = this.amount;
           // this.purchaseData.targetLocation = this.targetLocation.name
-          if (this.$route.params.id) { // 编辑
-            this.$http.putJson('/user/purchase', this.purchaseData).then(res => {
-              if (res.data.Status) {
-                this.$store.commit('SUCCESS', '更新成功')
-                this.$router.push('/user/purchases')
-              } else {
-                this.$store.commit('ERROR', res.data.Error.Err)
-              }
-            })
-          } else { // 新增
-            this.$http.postJson('/user/purchase', this.purchaseData).then(res => {
-              if (res.data.Status) {
-                this.$store.commit('SUCCESS', '保存成功')
-                this.$router.push('/user/purchases')
-              } else {
-                this.$store.commit('ERROR', res.data.Error.Err)
-              }
-            })
+          if (this.$route.params.id) {
+            // 编辑
+            this.$http
+              .putJson("/user/purchase", this.purchaseData)
+              .then(res => {
+                if (res.data.Status) {
+                  this.$store.commit("SUCCESS", "更新成功");
+                  this.$router.push("/user/purchases");
+                } else {
+                  this.$store.commit("ERROR", res.data.Error.Err);
+                }
+              });
+          } else {
+            // 新增
+            this.$http
+              .postJson("/user/purchase", this.purchaseData)
+              .then(res => {
+                if (res.data.Status) {
+                  this.$store.commit("SUCCESS", "保存成功");
+                  this.$router.push("/user/purchases");
+                } else {
+                  this.$store.commit("ERROR", res.data.Error.Err);
+                }
+              });
           }
-        })
+        });
       }
     },
-    handerProductImgs () {
+    handerProductImgs() {
       // 获取上传的token
       return new Promise((resolve, reject) => {
-        this.$http.get('/user/uptoken', {type: '3'}).then(res => {
+        this.$http.get("/user/uptoken", { type: "3" }).then(res => {
           if (res.data.Status) {
-            var uploadToken = res.data.Data
-            var updateCount = 0
-            var successCount = 0
+            var uploadToken = res.data.Data;
+            var updateCount = 0;
+            var successCount = 0;
             for (var index in this.purchaseData.products) {
-              var pd = this.purchaseData.products[index]
-              var pdImages = this.productsImages[index]
+              var pd = this.purchaseData.products[index];
+              var pdImages = this.productsImages[index];
               if (pdImages.imageSet) {
-                updateCount++
-                if (pd.images == '') { // 需要上传
-                  var pic = pdImages.generateDataUrl('image/png')
-                  var key = pd.id + '_' + this.$store.state.User.user.id + '_' + index
-                  this.$store.dispatch('uploadImages', {uploadToken: uploadToken, file: pic, key: key}).then(res => {
-                    this.purchaseData.products[successCount].images = key
-                    successCount++
-                    if (updateCount == successCount) {
-                      resolve(true)
-                    }
-                  }).catch(res => {
-                    this.$store.commit('ERROR', '第' + Number(index + 1) + '个商品图片上传失败')
-                    reject(false)
-                  })
+                updateCount++;
+                if (pd.images == "") {
+                  // 需要上传
+                  var pic = pdImages.generateDataUrl("image/png");
+                  var key =
+                    pd.id + "_" + this.$store.state.User.user.id + "_" + index;
+                  this.$store
+                    .dispatch("uploadImages", {
+                      uploadToken: uploadToken,
+                      file: pic,
+                      key: key
+                    })
+                    .then(res => {
+                      this.purchaseData.products[successCount].images = key;
+                      successCount++;
+                      if (updateCount == successCount) {
+                        resolve(true);
+                      }
+                    })
+                    .catch(res => {
+                      this.$store.commit(
+                        "ERROR",
+                        "第" + Number(index + 1) + "个商品图片上传失败"
+                      );
+                      reject(false);
+                    });
                 } else {
-                  successCount++
+                  successCount++;
                   if (updateCount == successCount) {
-                    resolve(true)
+                    resolve(true);
                   }
                 }
               } else {
-                this.$store.commit('ERROR', '第' + Number(index + 1) + '个商品未上传图片')
-                return reject(false)
+                this.$store.commit(
+                  "ERROR",
+                  "第" + Number(index + 1) + "个商品未上传图片"
+                );
+                return reject(false);
               }
             }
           } else {
-            this.$store.commit('ERROR', '获取头像上传Token失败，请稍后再试')
-            return reject(false)
+            this.$store.commit("ERROR", "获取头像上传Token失败，请稍后再试");
+            return reject(false);
           }
-        })
-      })
+        });
+      });
     }
   },
-  created () {
-    this.$http.get('/user/address', {}).then(res => {
+  created() {
+    this.$http.get("/user/address", {}).then(res => {
       if (res.data.Status) {
-        this.address = res.data.Data.address
-        this.defaultAddress = res.data.Data.defaultAddress
+        this.address = res.data.Data.address;
+        this.defaultAddress = res.data.Data.defaultAddress;
       }
-    })
+    });
 
-    if (this.$route.params.id) { // 编辑
-      this.$http.get('/purchase', {id: this.$route.params.id}).then(res => {
+    if (this.$route.params.id) {
+      // 编辑
+      this.$http.get("/purchase", { id: this.$route.params.id }).then(res => {
         if (res.data.Status) {
-          this.purchaseData = res.data.Data
+          this.purchaseData = res.data.Data;
         }
-      })
-    } else { // 新增
-
+      });
+    } else {
+      // 新增
     }
   }
-}
+};
 </script>
 
 <style scoped>
-
 /* img {
     max-width: 90%;
     max-height: 90%;
 } */
-canvas{
-    max-width:100%
+canvas {
+  max-width: 100%;
 }
 </style>

@@ -20,18 +20,6 @@ const locationID = {
   '澳大利亚': 'au'
 }
 
-const expresss = {
-  'UPS': 'all',
-  '顺丰快递': 'hk',
-  'EMS': 'mo',
-  '圆通快递': 'tw',
-  '申通快递': 'sg',
-  '中通快递': 'jp',
-  '天天快递': 'kr',
-  '百世汇通': 'th',
-  '韵达快递': 'de'
-}
-
 // 定义一个混入对象
 const Mixin = {
   install (Vue, options) {
@@ -40,7 +28,7 @@ const Mixin = {
         return {
           avatarRoot: avatarRoot,
           purchaseRoot: purchaseRoot,
-          options: {
+          viewerOptions: {
             inline: false,
             button: true,
             navbar: false,
@@ -56,18 +44,50 @@ const Mixin = {
             keyboard: true,
             url: 'data-source'
           },
-          expresss: [
-            {id: 'dhl', name: 'DHL'},
-            {id: 'fedex', name: 'FedEx'},
-            {id: 'ups', name: 'UPS'},
-            {id: 'sf', name: '顺丰'},
-            {id: 'ems', name: 'EMS'},
-            {id: 'yt', name: '圆通'},
-            {id: 'st', name: '申通'},
-            {id: 'zt', name: '中通'},
-            {id: 'tt', name: '天天'},
-            {id: 'bs', name: '百世'},
-            {id: 'yd', name: '韵达'}
+          expresss: [{
+            id: 'dhl',
+            name: 'DHL'
+          },
+          {
+            id: 'fedex',
+            name: 'FedEx'
+          },
+          {
+            id: 'ups',
+            name: 'UPS'
+          },
+          {
+            id: 'sf',
+            name: '顺丰'
+          },
+          {
+            id: 'ems',
+            name: 'EMS'
+          },
+          {
+            id: 'yt',
+            name: '圆通'
+          },
+          {
+            id: 'st',
+            name: '申通'
+          },
+          {
+            id: 'zt',
+            name: '中通'
+          },
+          {
+            id: 'tt',
+            name: '天天'
+          },
+          {
+            id: 'bs',
+            name: '百世'
+          },
+          {
+            id: 'yd',
+            name: '韵达'
+          }
           ],
           destinations: [{
             header: '默认'
@@ -221,5 +241,6 @@ const Mixin = {
         }
       }
     })
-  }}
+  }
+}
 Vue.use(Mixin)

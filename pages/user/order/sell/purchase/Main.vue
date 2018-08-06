@@ -42,14 +42,16 @@
     </v-app>
 </template>
 <script>
-import Pay from './Pay'
-import Buy from './Buy'
-import Deliver from './Deliver'
-import Receiving from './Receiving'
-import Complete from './Complete'
-import Return from './Return'
-import Cancel from './Cancel'
+import Pay from "./Pay";
+import Buy from "./Buy";
+import Deliver from "./Deliver";
+import Receiving from "./Receiving";
+import Complete from "./Complete";
+import Return from "./Return";
+import Cancel from "./Cancel";
 export default {
+  middleware: "authenticated",
+
   components: {
     Pay,
     Buy,
@@ -59,11 +61,11 @@ export default {
     Return,
     Cancel
   },
-  data () {
+  data() {
     return {
       identity: 0,
       orderState: 0
-    }
+    };
   }
-}
+};
 </script>

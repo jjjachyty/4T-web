@@ -60,7 +60,10 @@
                 <v-icon small color="grey">list</v-icon>
                 <v-list-tile-title>订单</v-list-tile-title>
               </v-list-tile>
-
+              <v-list-tile to="/user/wallet">
+                <v-icon small color="grey">fas fa-wallet</v-icon>
+                <v-list-tile-title>钱包</v-list-tile-title>
+              </v-list-tile>
               <!-- <v-list-tile disabled to="/logispurch">
         <v-icon small color="grey">add_shopping_cart</v-icon>
           <v-list-tile-title>转卖</v-list-tile-title>
@@ -103,17 +106,17 @@
 
 </template>
 <script>
-import { mapGetters, mapState } from "vuex"
-import { avatarRoot } from "@/config"
+import { mapGetters, mapState } from "vuex";
+import { avatarRoot } from "@/config";
 export default {
-  data () {
+  data() {
     return {
       url: avatarRoot,
       drawer: true,
       show: true,
       active: 2,
       newMsg: 0
-    }
+    };
   },
   computed: {
     ...mapState({
@@ -121,33 +124,33 @@ export default {
     })
   },
   methods: {
-    loginOut () {
-      this.$store.commit("LOGOUT")
-      this.$router.push("/")
+    loginOut() {
+      this.$store.commit("LOGOUT");
+      this.$router.push("/");
     },
-    home () {
-      this.$router.push("/")
+    home() {
+      this.$router.push("/");
     },
-    currentMod (index) {
-      this.$store.commit('ACTIVE_HEADER', index)
+    currentMod(index) {
+      this.$store.commit("ACTIVE_HEADER", index);
     }
   },
-  created () {},
-  mounted () {
+  created() {},
+  mounted() {
     if (this.$store.state.token.length > 0) {
       this.$http
-        .get('/user/msg/news', {})
+        .get("/user/msg/news", {})
         .then(res => {
           if (res.data.Status) {
-            this.newMsg = res.data.Data
+            this.newMsg = res.data.Data;
           }
         })
         .catch(res => {
-          this.$store.commit('ERROR', res.data);
-        })
+          this.$store.commit("ERROR", res.data);
+        });
     }
   }
-}
+};
 </script>
 
 <style scoped>

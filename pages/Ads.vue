@@ -1,6 +1,6 @@
 <template>
 <v-card class="card">
-  <v-carousel  hide-controls hide-delimiters class="v-carousel">
+  <v-carousel v-if="showCarousel"  hide-controls hide-delimiters class="v-carousel">
     <v-carousel-item v-for="(item,i) in items" :src="item.src" :key="i">
             <small class="white--text tips"> 广告</small>
 
@@ -15,17 +15,19 @@
 </template>
 <script>
 export default {
-  props: ["textTop", "height"],
   data() {
     return {
+              showCarousel : false,
       items: [
         {
           src: "/login.png",
           text: "发表曝光文章 每月最多👍 🉐️ Garmin 运动手表 月月曝 月月送",
-          url: "/activity/1"
+          url: "/ads/activity1"
         }
       ]
     };
+  },mounted () {
+    this.showCarousel = true
   }
 };
 </script>

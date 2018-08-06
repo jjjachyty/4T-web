@@ -7,11 +7,12 @@ const rechargeType = {
   2: '支付宝'
 }
 const purchaseState = {
-  0: '待接单',
-  1: '待确定',
-  2: '已确认',
-  3: '已购买',
-  4: '已发货'
+  '-1': '过期未处理,临时关闭',
+  '0': '待接单',
+  '1': '待确定',
+  '2': '已确认',
+  '3': '已购买',
+  '4': '已发货'
 }
 const reasonType = {
   '0': '代购费高',
@@ -23,22 +24,33 @@ const reasonType = {
 const quotationType = {
   '0': '被拒绝',
   '-1': '失效',
-  '1': '待支付'
+  '1': '待支付',
+  '2': '让代购'
 }
+
 const orderState = {
   '-1': '取消/关闭',
+  '-10': '退款中',
+  '-11': '退款成功',
   0: '待付款',
   1: '待购买',
   2: '待发货',
   3: '待收货',
   4: '待评价',
+  41: '待卖家评论',
+  42: '待买家评论',
+  43: '完成交易',
   50: '申请退款',
   51: '申请退货',
   500: '被拒绝',
   501: '同意退款',
   510: '同意退货退款'
 }
-
+const expressState = {
+  '-1': '待发货',
+  0: '运送中',
+  1: '已收货'
+}
 export function dict (value, key) {
   console.log('dict', key, value)
   switch (key) {
@@ -57,6 +69,8 @@ export function dict (value, key) {
     case 'orderState':
       console.log('orderState', value, key)
       return orderState[value]
+    case 'expressState':
+      return expressState[value]
     default:
       break
   }

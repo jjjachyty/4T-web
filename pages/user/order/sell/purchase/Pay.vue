@@ -11,13 +11,13 @@
                 <v-layout row wrap>
 
                     <v-flex xs12>
-                                                <Top :order="order"></Top>
+                                                <Header :order="order"></Header>
 
                     </v-flex>
          
-                    <v-flex xs12>
+                    <v-flex xs12 class="grey lighten-5">
                         <v-divider></v-divider>
-                        <router-link :to="order.originalLink" class="grey lighten-5">
+                        <router-link :to="order.originalLink">
                         <v-card-text>
 
                                                                      <Product :products="order.products"></Product>
@@ -48,14 +48,14 @@
                             </div>
                             <!-- 修改价格 -->
                             <div v-if="!showDelete"> 
-                            <v-btn small outline  color="deep-orange" @click="showModify = !showModify" v-if="!showModify">修改代费</v-btn>
+                            <v-btn small outline  color="deep-orange" @click="showModify = !showModify" v-if="!showModify">修改代购费</v-btn>
                             <div v-if="showModify" class="modify">
                                 <v-spacer></v-spacer>
                             <v-btn color="teal" flat small @click="showModify = false">
                                 取消
                             </v-btn>
-                               <s class="red--text"> ¥{{order.charge}}</s>
-                            <v-text-field ref="charge"  class="modify-text" clearable v-model.number="charge" prefix="¥" :width="100" type="number" :rules="[v => Number(v) >= 0 || '价格需大于等于0']"> </v-text-field>
+                               <s class="red--text">{{order.charge}}</s>
+                            <v-text-field ref="charge"  class="modify-text" :error="chargeError" clearable v-model.number="charge" prefix="¥" :width="100" type="number" :rules="[v =>  v >= 0 || '价格需大于等于0']"> </v-text-field>
                             <v-btn color="teal" flat small @click="modify(index)">
                                 确定
                             </v-btn>
@@ -73,82 +73,84 @@
     </v-app>
 </template>
 <script>
-import Top from './Top'
-import Product from './Product'
+import Header from "./Header";
+import Product from "./Product";
 export default {
   components: {
-    Top,
+    Header,
     Product
   },
-  data () {
+  data() {
     return {
+      chargeError: false,
       showDelete: false,
       showModify: false,
       charge: 0,
       showCancel: false,
       orders: [],
-      reason: '我不想要了',
+      reason: "我不想要了",
       index: null,
       otherReason: null
-    }
+    };
   },
   methods: {
-    close (index) {
-      var order = this.orders[index]
+    close(index) {
+      var order = this.orders[index];
       this.$http
-        .putJson('/user/order/' + order.id, {
+        .putJson("/user/order/" + order.id, {
           id: order.id,
-          type: '1',
-          state: '-1',
-          seller: {cancelReason: this.reason}
+          type: "1",
+          state: "-1",
+          seller: { cancelReason: this.reason }
         })
         .then(res => {
           if (res.data.Status) {
-            this.$store.commit('SUCCESS', '关闭订单成功')
-            this.orders.splice(index, 1)
+            this.$store.commit("SUCCESS", "关闭订单成功");
+            this.orders.splice(index, 1);
           } else {
-            this.$store.commit('ERROR', res.data.Error.Err)
+            this.$store.commit("ERROR", res.data.Error.Err);
           }
-        })
+        });
     },
-    modify (index) {
-      var order = this.orders[index]
+    modify(index) {
+      var order = this.orders[index];
 
-      if (this.$refs.charge[0].validate()) {
+      if (this.charge >= 0) {
         this.$http
-          .putJson('/user/order/' + order.id, {
+          .putJson("/user/order/" + order.id, {
             id: order.id,
-            type: '1',
-            state: '0',
-            charge: this.charge
+            type: "1",
+            state: "0",
+            charge: Number(this.charge)
           })
           .then(res => {
             if (res.data.Status) {
-              this.$store.commit('SUCCESS', '修改价格成功')
+              this.$store.commit("SUCCESS", "修改价格成功");
               var productAmount =
-                this.orders[index].strikePrice - this.orders[index].charge
-              this.orders[index].strikePrice = productAmount + this.charge
-              this.orders[index].charge = this.charge
-              this.showModify = false
+                this.orders[index].strikePrice - this.orders[index].charge;
+              this.orders[index].strikePrice =
+                productAmount + Number(this.charge);
+              this.orders[index].charge = Number(this.charge);
+              this.showModify = false;
             } else {
-              this.$store.commit('ERROR', res.data.Error.Err)
+              this.$store.commit("ERROR", res.data.Error.Err);
             }
-          })
+          });
       } else {
-        this.$refs.charge[0].error = true
+        this.chargeError = true;
       }
     }
   },
-  mounted () {
+  mounted() {
     this.$http
-      .get('/user/orders', { type: 1, identity: 1, state: '^0' })
+      .get("/user/orders", { type: 1, identity: 1, state: "^0" })
       .then(res => {
         if (res.data.Status) {
-          this.orders = res.data.Data
+          this.orders = res.data.Data;
         }
-      })
+      });
   }
-}
+};
 </script>
 <style scoped>
 .modify {

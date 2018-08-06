@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="dialog" persistent max-width="600px">
+  <v-dialog v-model="dialog" v-if="quotationOrder" persistent max-width="600px">
     <v-form ref="form" v-model="valid" lazy-validation>
       <v-card>
         <v-card-title>
@@ -115,138 +115,157 @@
   </v-dialog>
 </template>
 <script>
-import { validationMixin } from 'vuelidate'
+import { validationMixin } from "vuelidate";
 export default {
-  props: ['quotationOrder', 'dialog', 'purchase', 'index'],
+  props: ["quotationOrder", "dialog", "purchase", "index"],
 
   computed: {
-    orderAmount: function () {
-      var amount = 0.0
-      for (const key in this.quotationOrder.products) {
-        if (this.quotationOrder.products.hasOwnProperty(key)) {
-          amount += Number(this.quotationOrder.products[key].price) * this.quotationOrder.products[key].quantity
+    orderAmount: function() {
+      var amount = 0.0;
+      if (this.quotationOrder) {
+        for (const key in this.quotationOrder.products) {
+          if (this.quotationOrder.products.hasOwnProperty(key)) {
+            amount +=
+              Number(this.quotationOrder.products[key].price) *
+              this.quotationOrder.products[key].quantity;
+          }
         }
+
+        return Number(this.quotationOrder.charge) + Number(amount);
       }
-
-      return Number(this.quotationOrder.charge) + Number(amount)
     },
-    minExpiryTime: function () {
-      return this.formatDate(new Date(new Date().getTime() + 10 * 60 * 1000), 'HH:mm')
+    minExpiryTime: function() {
+      return this.formatDate(
+        new Date(new Date().getTime() + 10 * 60 * 1000),
+        "HH:mm"
+      );
     }
-
   },
-  data () {
+  data() {
     return {
       valid: false,
       productsImages: [],
-      priceRules: [
-        v => !!v || '商品也是有价格的哦'
-      ],
-      expiryTimeRules: [
-        v => !!v || '最迟什么时候回复你呢？'
-      ],
-      deliveryTimeRules: [
-        v => !!v || '什么时候发货呢？'
-      ],
-      chargeRules: [
-        v => !!v || '好歹赚点儿辛苦费吧'
-      ],
+      priceRules: [v => !!v || "商品也是有价格的哦"],
+      expiryTimeRules: [v => !!v || "最迟什么时候回复你呢？"],
+      deliveryTimeRules: [v => !!v || "什么时候发货呢？"],
+      chargeRules: [v => !!v || "好歹赚点儿辛苦费吧"],
       timeDialog: false,
       deliveryTimeDialog: false,
-      min: '2018-07-02'
-    }
+      min: "2018-07-02"
+    };
   },
   methods: {
-    close () {
-      console.log('closeDialog')
-      this.$emit('closeDialog')
+    close() {
+      console.log("closeDialog");
+      this.$emit("closeDialog");
     },
-    handleNewImage (product) {
-      product.images = ''
+    handleNewImage(product) {
+      product.images = "";
     },
-    handerProductImgs () {
+    handerProductImgs() {
       // 获取上传的token
       return new Promise((resolve, reject) => {
-        this.$http.get('/user/uptoken', {type: '3'}).then(res => {
+        this.$http.get("/user/uptoken", { type: "3" }).then(res => {
           if (res.data.Status) {
-            var uploadToken = res.data.Data
-            var updateCount = 0
-            var successCount = 0
+            var uploadToken = res.data.Data;
+            var updateCount = 0;
+            var successCount = 0;
             for (var index in this.quotationOrder.products) {
-              var pd = this.quotationOrder.products[index]
-              var pdImages = this.productsImages[index]
+              var pd = this.quotationOrder.products[index];
+              var pdImages = this.productsImages[index];
               if (pdImages.imageSet) {
-                updateCount++
-                if (pd.images == '') { // 需要上传
-                  var pic = pdImages.generateDataUrl('image/png')
-                  var key = pd.id + '_' + this.$store.state.User.user.id + '_' + index
-                  this.$store.dispatch('uploadImages', {uploadToken: uploadToken, file: pic, key: key}).then(res => {
-                    this.quotationOrder.products[successCount].images = key
-                    successCount++
-                    if (updateCount == successCount) {
-                      resolve(true)
-                    }
-                  }).catch(res => {
-                    this.$store.commit('ERROR', '第' + Number(index + 1) + '个商品图片上传失败')
-                    reject(false)
-                  })
+                updateCount++;
+                if (pd.images == "") {
+                  // 需要上传
+                  var pic = pdImages.generateDataUrl("image/png");
+                  var key =
+                    pd.id + "_" + this.$store.state.User.user.id + "_" + index;
+                  this.$store
+                    .dispatch("uploadImages", {
+                      uploadToken: uploadToken,
+                      file: pic,
+                      key: key
+                    })
+                    .then(res => {
+                      this.quotationOrder.products[successCount].images = key;
+                      successCount++;
+                      if (updateCount == successCount) {
+                        resolve(true);
+                      }
+                    })
+                    .catch(res => {
+                      this.$store.commit(
+                        "ERROR",
+                        "第" + Number(index + 1) + "个商品图片上传失败"
+                      );
+                      reject(false);
+                    });
                 } else {
-                  successCount++
+                  successCount++;
                   if (updateCount == successCount) {
-                    resolve(true)
+                    resolve(true);
                   }
                 }
               } else {
-                this.$store.commit('ERROR', '第' + Number(index + 1) + '个商品未上传图片')
-                return reject(false)
+                this.$store.commit(
+                  "ERROR",
+                  "第" + Number(index + 1) + "个商品未上传图片"
+                );
+                return reject(false);
               }
             }
           } else {
-            this.$store.commit('ERROR', '获取头像上传Token失败，请稍后再试')
-            return reject(false)
+            this.$store.commit("ERROR", "获取头像上传Token失败，请稍后再试");
+            return reject(false);
           }
-        })
-      })
+        });
+      });
     },
-    async saveQuotation () {
+    async saveQuotation() {
       if (this.$refs.form.validate()) {
-        this.handerProductImgs().then(flag => {
-          if (!this.index) { // 新增
-            this.quotationOrder.purchaseID = this.purchase.id
-            this.$http.postJson('/user/quotation', this.quotationOrder).then(res => {
-              if (res.data.Status) {
-                console.log('保存报价单', res.data)
-                this.close()
-                this.$emit('updateOrders', res.data.Data)
-              } else {
-                this.$store.commit('ERROR', res.data.Error.Err)
-              }
-            }).catch(res => {
+        this.handerProductImgs()
+          .then(flag => {
+            if (!this.index) {
+              // 新增
+              this.quotationOrder.purchaseID = this.purchase.id;
+              this.$http
+                .postJson("/user/quotation", this.quotationOrder)
+                .then(res => {
+                  if (res.data.Status) {
+                    console.log("保存报价单", res.data);
+                    this.close();
+                    this.$emit("updateOrders", res.data.Data);
+                  } else {
+                    this.$store.commit("ERROR", res.data.Error.Err);
+                  }
+                })
+                .catch(res => {});
+            } else {
+              // 编辑
+              this.quotationOrder.purchaseID = this.purchase.id;
+              this.$http
+                .putJson("/user/quotation", this.quotationOrder)
+                .then(res => {
+                  if (res.data.Status) {
+                    console.log("修改报价单", res.data);
 
-            })
-          } else { // 编辑
-            this.quotationOrder.purchaseID = this.purchase.id
-            this.$http.putJson('/user/quotation', this.quotationOrder).then(res => {
-              if (res.data.Status) {
-                console.log('修改报价单', res.data)
-
-                this.close()
-                this.$emit('updateOrders', this.quotationOrder)
-              } else {
-                this.$store.commit('ERROR', res.data.Error.Err)
-              }
-            }).catch(res => {
-
-            })
-          }
-        }).catch(res => {
-          this.$store.commit('ERROR', 'sasasasasasas-----', res)
-        })
+                    this.close();
+                    this.$emit("updateOrders", this.quotationOrder);
+                  } else {
+                    this.$store.commit("ERROR", res.data.Error.Err);
+                  }
+                })
+                .catch(res => {});
+            }
+          })
+          .catch(res => {
+            this.$store.commit("ERROR", "sasasasasasas-----", res);
+          });
       }
     }
   },
-  create () {
-    this.productsImages = new Array(this.quotationOrder.products.length)
+  create() {
+    this.productsImages = new Array(this.quotationOrder.products.length);
   }
-}
+};
 </script>

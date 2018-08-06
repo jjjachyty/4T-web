@@ -51,8 +51,8 @@
 
       <v-layout row wrap>
         <v-flex md8 offset-md3>
-        <v-layout>
-              <v-card>
+        <v-layout row wrap>
+              <v-card flat>
 
         <v-flex offset-md7 xs12>
           <small v-if="articles.length > 0" class="grey--text">默认显示最新10条数据,如不满足,请使用左边条件筛选</small>
@@ -121,7 +121,7 @@
                   </v-btn>
                 </v-flex>
                 <v-flex xs12>
-                  <v-alert v-model="item.state == -1" type="error">{{item.auditOpinion}}</v-alert>
+                  <small v-if="item.state == -1" class="red--text">{{item.auditOpinion}}</small>
                 </v-flex>
 
 
@@ -131,10 +131,12 @@
           <br/>
           <!-- <v-divider></v-divider> -->
         </v-flex>
-        <v-flex offset-md5 offset-xs3 xs12>
+        <v-flex xs12  >
 
-          <small v-if="articles.length == 0" class="subheading grey--text">
-            <img src="/nodata.png">哦吼~没有查询到数据...</small>
+          <div v-if="articles.length == 0" class="subheading grey--text">
+            <img src="/nodata.png">
+            <br>
+            <v-subheader>哦吼~没有查询到数据...</v-subheader></div>
         </v-flex>
       </v-card>
               </v-layout>
@@ -155,104 +157,98 @@
       </v-dialog>
 
 
- 
-        <v-btn color="red" small dark fab fixed bottom right to="exparticle">
+        <v-btn color="red" small dark fab fixed bottom right to="/user/article">
           <v-icon>add</v-icon>
         </v-btn>
-
     </div>
   </v-app>
 </template>
 
 <script>
-import { mavonEditor } from 'mavon-editor'
-import 'mavon-editor/dist/css/index.css'
-
 export default {
-  components: {
-    mavonEditor
-  },
-
-  data () {
+  data() {
     return {
-      currentDate: '',
+      currentDate: "",
       showPicker1: false,
       showPicker2: false,
       serch: {
-        title: '',
-        place: '',
-        domain: '',
-        beginDate: '',
-        endDate: ''
+        title: "",
+        place: "",
+        domain: "",
+        beginDate: "",
+        endDate: ""
       },
       selected: {
-        id: '',
-        index: ''
+        id: "",
+        index: ""
       },
       removedialog: false,
       drawer: false,
       selected: [1],
-      e13: '',
+      e13: "",
       articles: []
-    }
+    };
   },
   computed: {
-    cardclass (value) {
+    cardclass(value) {
       switch (value) {
         case 0:
-          return 'article-approval'
+          return "article-approval";
 
-          break
+          break;
         case 1:
-          return 'article-adopt'
-          break
+          return "article-adopt";
+          break;
         case -1:
-          return 'article-refuse'
-          break
+          return "article-refuse";
+          break;
         default:
-          break
+          break;
       }
     }
   },
 
-  created () {
-    this.currentDate = this.getCurrentStr()
-    this.$http.get('/user/myexparticle', {}).then(res => {
-      console.log(res)
-      this.articles = res.data.Data
-    }).catch(res => {
-
-    })
+  created() {
+    this.currentDate = this.getCurrentStr();
+    this.$http
+      .get("/user/articles", {})
+      .then(res => {
+        console.log(res);
+        this.articles = res.data.Data;
+      })
+      .catch(res => {});
   },
   methods: {
-    showdialog (id, index) {
-      this.selected = {id: id, index: index}
-      this.removedialog = true
+    showdialog(id, index) {
+      this.selected = { id: id, index: index };
+      this.removedialog = true;
     },
-    remove () {
-      this.removedialog = false
-      this.$http.delete('/user/myexparticle', {articleid: this.selected.id}).then(res => {
-        console.log('delete,res', res)
-        if (res.data.Status) {
-          this.$store.commit('SUCCESS', '删除文章成功')
-          this.articles.splice(this.selected.index, 1)
-        }
-      })
+    remove() {
+      this.removedialog = false;
+      this.$http
+        .delete("/user/myexparticle", { articleid: this.selected.id })
+        .then(res => {
+          console.log("delete,res", res);
+          if (res.data.Status) {
+            this.$store.commit("SUCCESS", "删除文章成功");
+            this.articles.splice(this.selected.index, 1);
+          }
+        });
     },
-    serach () {
-      this.$http.get('/user/myexparticle', this.serch).then(res => {
-        console.log(res)
-        this.articles = res.data.Data
-      }).catch(res => {
-
-      })
+    serach() {
+      this.$http
+        .get("/user/articles", this.serch)
+        .then(res => {
+          console.log(res);
+          this.articles = res.data.Data;
+        })
+        .catch(res => {});
     },
-    edit (item) {
-      this.$router.push('/article/edit/' + item.id)
+    edit(item) {
+      this.$router.push("/user/article/" + item.id);
     }
-
   }
-}
+};
 </script>
 <style scoped>
 /* .content{
@@ -261,7 +257,7 @@ export default {
     height: 200px;
     word-wrap:break-word
 } */
-    .v-note-wrapper {
+.v-note-wrapper {
   position: relative;
   width: 100%;
   max-height: 200px;
@@ -272,29 +268,30 @@ export default {
   -webkit-box-orient: vertical;
   -webkit-box-direction: normal;
   -webkit-flex-direction: column;
-      -ms-flex-direction: column;
-          flex-direction: column;
+  -ms-flex-direction: column;
+  flex-direction: column;
   -webkit-transition: all 0.3s linear 0s;
   transition: all 0.3s linear 0s;
   background: #fff;
   z-index: 3 !important;
   text-align: left;
 }
-.article-adopt{
-    padding: 10px;
-    background-image: url("/static/adopt.png");
-    background-position-x: 80%;
-    background-position-y: 50%
+.article-adopt {
+  padding: 10px;
+  background-image: url("/static/adopt.png");
+  background-position-x: 80%;
+  background-position-y: 50%;
 }
-.article-refuse{
-    padding: 10px;
-    background-image: url("/static/refuse.png");
-    background-position-x: 80%;
-    background-position-y: 50%}
-.article-approval{
-    padding: 10px;
-    background-image: url("/static/approval.png");
-    background-position-x: 80%;
-    background-position-y: 50%
+.article-refuse {
+  padding: 10px;
+  background-image: url("/static/refuse.png");
+  background-position-x: 80%;
+  background-position-y: 50%;
+}
+.article-approval {
+  padding: 10px;
+  background-image: url("/static/approval.png");
+  background-position-x: 80%;
+  background-position-y: 50%;
 }
 </style>

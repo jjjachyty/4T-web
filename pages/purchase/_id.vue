@@ -79,7 +79,7 @@
                   <v-layout row justify-center>
 
                     <v-flex md2 xs3 >
-                           <div v-viewer="options" class="images clearfix">
+                           <div v-viewer="viewerOptions" class="images clearfix">
                             <img :src="purchaseRoot+pd.images+'?'+Number(new Date())" :data-source="purchaseRoot+pd.images+'?'+Number(new Date())" class="image" >
                         </div>
 
@@ -139,9 +139,8 @@
           <!-- 报价单-->
 
           <v-card-title height="40" class="body-2 font-weight-medium">代购报价</v-card-title>
-           
-            <QuotationList  v-if="item.quotationOrders" :purchase="item"></QuotationList>
-             <small v-else>暂无人报价,</small>
+            <br>
+            <QuotationList  :purchase="item"></QuotationList>
 
         </v-flex>
         <v-flex md4 v-if="item.createBy == $store.state.User.user.id">
@@ -196,7 +195,6 @@ export default {
       dialog: false,
       refuseFlag: false,
       timeDialog: false,
-      opQuotationOrder: {},
       // avatarRoot:avatarRoot,
       quotationOrders: [],
       quotationOrder: {
@@ -232,15 +230,16 @@ export default {
   computed: {
     purchaseFlag: function() {
       var flag = true;
-      if (this.item.createBy == this.$store.state.User.user.id) {
+      if (this.item.createBy == this.$store.state.user.id) {
         flag = false;
       }
 
-      this.item.quotationOrders.forEach(pd => {
-        if (pd.createBy == this.$store.state.User.user.id) {
-          flag = false;
-        }
-      });
+      this.item.quotationOrders &&
+        this.item.quotationOrders.forEach(pd => {
+          if (pd.createBy == this.$store.state.user.id) {
+            flag = false;
+          }
+        });
       return flag;
     }
   },
@@ -248,6 +247,14 @@ export default {
     this.quotationOrder.products = JSON.parse(
       JSON.stringify(this.item.products)
     );
+
+    this.$store.dispatch("seo");
+  },
+  head() {
+    return {
+      title: "求" + this.item.destination + "代购" + this.item.products[0].name,
+      meta: []
+    };
   },
   asyncData(context) {
     var item = {};
@@ -262,7 +269,7 @@ export default {
           });
 
           context.app.head.title = item.destination + "代购" + productNames;
-          return { item: item };
+          return { item: item || [] };
         }
       })
       .catch(res => {

@@ -9,16 +9,18 @@
                     <v-layout row wrap >
                         
                         <v-flex xs12 >
-                           <Top :order="order"></Top>
+                           <Header :order="order"></Header>
                         </v-flex>
-                        <router-link :to="order.originalLink" class="grey lighten-5">
-                        <v-flex xs12>
+                        <v-flex xs12 class="grey lighten-5">
+                                                  <router-link :to="order.originalLink" >
+
                             <v-card-text>
                                            <Product :products="order.products"></Product>
 
                             </v-card-text>
+                            </router-link>
+
                         </v-flex>
-</router-link>
                         <v-flex xs12>
                               <v-expansion-panel  expand focusable popout v-model="expand">
     <v-expansion-panel-content>
@@ -29,14 +31,14 @@
 <v-container grid-list-xs>
                                <v-layout class="grey lighten-5">
                                    <v-flex xs2>
-                                       <div v-viewer="options" class="images clearfix">
-                            <img :src="purchaseRoot+order.ticket+'?'+Number(new Date())" :data-source="purchaseRoot+order.ticket+'?'+Number(new Date())" class="image" >
+                                       <div v-viewer="viewerOptions" class="images clearfix">
+                            <img :src="purchaseRoot+order.seller.buyTicket+'?'+Number(new Date())" :data-source="purchaseRoot+order.seller.buyTicket+'?'+Number(new Date())" class="image" >
                         </div>
                                    </v-flex>
                                    <v-flex>
                                        <v-layout wrap>
                                            <v-flex xs12><small>购买说明:</small></v-flex>
-                                           <v-flex class="caption">{{order.ticketExplain}}</v-flex>
+                                           <v-flex class="caption">{{order.seller.buyTicketExplain}}</v-flex>
                                        </v-layout>
                                    </v-flex>
                                </v-layout>
@@ -45,7 +47,7 @@
                         
     </v-expansion-panel-content>
         <v-expansion-panel-content>
-      <div slot="header"><small class="font-weight-bold">物流信息 <span class="red--text">{{order.buyer.express.state}}</span></small></div>
+      <div slot="header"><small class="font-weight-bold">物流信息 <span class="red--text">{{order.buyer.express.state | dict('expressState')}}</span></small></div>
                            <v-card raised  class="grey--text">
 <v-container>
                             <v-layout row wrap justify-start>
@@ -78,28 +80,17 @@
       <div slot="header">
          
               <small class="font-weight-bold">退换货</small>
-          
+              <small class="font-weight-bold red--text">{{order.buyer.returnReason}}</small>
           </div>
 <v-container class="caption grey--text">
-<v-layout wrap>
-        <v-flex>
-            <v-card-media height="70" xs3>
+<v-layout wrap justify-center>
+        <v-flex xs3>
+            <v-card-media height="70">
                       <img :src="purchaseRoot+order.buyer.returnTicket">
                     </v-card-media>
 
     </v-flex>
-    <v-flex xs9>
-        {{order.buyer.returnReason}}
-    </v-flex>
-   <v-flex xs12 v-if="order.state == '510'">
-       <v-divider></v-divider>
-       <v-subheader>退货地址</v-subheader>
-       <v-layout row wrap>
-           <v-flex>收货人:{{order.seller.returnAddress.userName}}</v-flex>
-           <v-flex>电话:{{order.seller.returnAddress.phone}}</v-flex>
-           <v-flex xs12>地址:{{order.seller.returnAddress.province}}{{order.seller.returnAddress.city}}{{order.seller.returnAddress.county}}{{order.seller.returnAddress.street}}</v-flex>
-       </v-layout>
-   </v-flex>
+
 </v-layout>
 </v-container>
                         
@@ -184,14 +175,14 @@
     </v-app>
 </template>
 <script>
-import Top from './Top'
-import Product from './Product'
+import Header from "./Header";
+import Product from "./Product";
 export default {
   components: {
-    Top,
+    Header,
     Product
   },
-  data () {
+  data() {
     return {
       orders: [],
       index: null,
@@ -199,104 +190,100 @@ export default {
       showReturn: false,
       address: [],
       expand: [false, false, false, true]
-    }
+    };
   },
   methods: {
-    refuse (index) {
-      var order = this.orders[index]
+    refuse(index) {
+      var order = this.orders[index];
       this.$http
-        .putJson('/user/order/' + order.id, {
+        .putJson("/user/order/" + order.id, {
           id: order.id,
-          state: '500'
+          state: "500"
         })
         .then(res => {
           if (res.data.Status) {
             this.$store.commit(
-              'SUCCESS',
-              '拒绝成功，建议您与买家沟通具体问题并给予解决'
-            )
-            this.orders[this.index].state = '500'
+              "SUCCESS",
+              "拒绝成功，建议您与买家沟通具体问题并给予解决"
+            );
+            this.orders[this.index].state = "500";
           } else {
-            this.$store.commit('ERROR', res.data.Error.Err)
+            this.$store.commit("ERROR", res.data.Error.Err);
           }
-        })
+        });
     },
-    showReturnProduct (index) {
-      this.index = index
-      this.showReturn = true
+    showReturnProduct(index) {
+      this.index = index;
+      this.showReturn = true;
     },
-    returnMoney (index) {
-      var order = this.orders[index]
+    returnMoney(index) {
+      var order = this.orders[index];
       this.$http
-        .putJson('/user/order/' + order.id, {
+        .putJson("/user/order/" + order.id, {
           id: order.id,
-          state: '501'
+          state: "501"
         })
         .then(res => {
           if (res.data.Status) {
-            this.$store.commit(
-              'SUCCESS',
-              '退款成功'
-            )
-            this.orders[this.index].state = '501'
+            this.$store.commit("SUCCESS", "退款成功");
+            this.orders[this.index].state = "501";
           } else {
-            this.$store.commit('ERROR', res.data.Error.Err)
+            this.$store.commit("ERROR", res.data.Error.Err);
           }
-        })
+        });
     },
-    returnProduct () {
-      var order = this.orders[this.index]
+    returnProduct() {
+      var order = this.orders[this.index];
       if (this.$refs.returnAddress[0].validate()) {
         this.$http
-          .putJson('/user/order/' + order.id, {
+          .putJson("/user/order/" + order.id, {
             id: order.id,
-            state: '510',
-            seller: {returnAddress: this.returnAddress}
+            state: "510",
+            seller: { returnAddress: this.returnAddress }
           })
           .then(res => {
             if (res.data.Status) {
-              this.$store.commit(
-                'SUCCESS',
-                '处理退货请求成功'
-              )
-              this.orders[this.index].state = '510'
-              this.orders[this.index].seller.receivingAddress = this.returnAddress
-              this.showReturn = false
+              this.$store.commit("SUCCESS", "处理退货请求成功");
+              this.orders[this.index].state = "510";
+              this.orders[
+                this.index
+              ].seller.receivingAddress = this.returnAddress;
+              this.showReturn = false;
             } else {
-              this.$store.commit('ERROR', res.data.Error.Err)
+              this.$store.commit("ERROR", res.data.Error.Err);
             }
-          })
+          });
       } else {
-        this.$refs.returnAddress[0].error = true
+        this.$refs.returnAddress[0].error = true;
       }
     }
   },
-  created () {
-    this.$http.get('/user/orders', {type: 1, identity: 1, state: '^5'}).then(res => {
-      if (res.data.Status) {
-        this.orders = res.data.Data
-      }
-    })
+  created() {
+    this.$http
+      .get("/user/orders", { type: 1, identity: 1, state: "^5" })
+      .then(res => {
+        if (res.data.Status) {
+          this.orders = res.data.Data;
+        }
+      });
 
-    this.$http.get('/user/address', {}).then(res => {
+    this.$http.get("/user/address", {}).then(res => {
       if (res.data.Status) {
-        this.address = res.data.Data.address
-        this.receivingAddress = res.data.Data.address[0]
+        this.address = res.data.Data.address;
+        this.receivingAddress = res.data.Data.address[0];
       }
-    })
+    });
   }
-}
+};
 </script>
 <style scoped>
-.image{
-    width: 100%;
-    height: 50px;
+.image {
+  width: 100%;
+  height: 50px;
 }
-.rate{
- display:flex;
- padding:0px;
- align-items: center;
+.rate {
+  display: flex;
+  padding: 0px;
+  align-items: center;
 }
-
-
 </style>

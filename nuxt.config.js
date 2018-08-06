@@ -51,9 +51,6 @@ module.exports = {
     src: '~/plugins/mixins.js',
     ssr: true
   }, {
-    src: '~/plugins/localStorage.js',
-    ssr: false
-  }, {
     src: '~/plugins/metainfo.js',
     ssr: true
   }, {
@@ -61,10 +58,10 @@ module.exports = {
     ssr: true
   }],
   css: [
-    '~/assets/style/app.styl',
     'vuetify/dist/vuetify.min.css',
     'viewerjs/dist/viewer.css',
-    'vue-croppa/dist/vue-croppa.css'
+    'vue-croppa/dist/vue-croppa.css',
+    'mavon-editor/dist/css/index.css'
   ],
   /*
      ** Customize the progress bar color

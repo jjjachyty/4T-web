@@ -9,7 +9,8 @@
   >
     <v-card
       flat
-      color="orange darken-4"
+      dark
+    
       class="white--text text-xs-center footer"
     >
       <v-divider></v-divider>
@@ -59,7 +60,7 @@
             <v-card-title class="green white--text">请使用微信扫一扫(请备注4T)</v-card-title>
             <v-divider></v-divider>
             <v-card-text class="text-xs-center">
-                <img src="wechat.jpg" class="wechat">
+                <img src="/wechat.jpg" class="wechat">
             </v-card-text>
         </v-card>
          

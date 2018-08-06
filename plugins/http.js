@@ -21,6 +21,7 @@ export default (context) => {
       if (context.store.state.token !== '') {
         config.headers.Authorization = `Bearer ${context.store.state.token}`
       }
+
       // if (config.url !== '/user/refreshtoken') {
       //   if (config.url.indexOf('/user') !== -1) { // 用户操作 需要登陆
       //     // 判断token是否过期
@@ -72,8 +73,7 @@ export default (context) => {
               context.store.commit('INFO', '登陆状态已过期，请重新登录')
 
               context.redirect(
-                '/login',
-                {
+                '/login', {
                   redirect: context.route.fullPath
                 }
               )
@@ -90,8 +90,7 @@ export default (context) => {
           case 200:
             context.store.commit('INFO', '请先登陆')
             context.redirect(
-              '/login',
-              {
+              '/login', {
                 redirect: context.route.fullPath
               }
             )

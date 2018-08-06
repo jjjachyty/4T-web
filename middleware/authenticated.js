@@ -4,7 +4,10 @@ export default function ({
   redirect,
   route
 }) {
+  console.log('authenticated--token', store.state.token)
   if (!store.getters.isAuthenticated) {
-    redirect(302, '/login', {redirect: route.fullPath})
+    redirect(302, '/login', {
+      redirect: route.fullPath
+    })
   }
 }

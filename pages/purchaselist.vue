@@ -26,7 +26,7 @@
           <nuxt-link :to="/purchase/+item.id">
           <v-card>
             <v-layout row>
-              <v-flex xs8 md10>
+              <v-flex xs8 md6>
 
                 <!-- <span>
                   <v-chip v-if="item.type=='0'"  small color="red" label class="white--text">
@@ -36,10 +36,10 @@
                    代购
                   </v-chip>
                 </span> -->
-                <v-chip small label color="teal" v-if="item.state == 0"><small class="caption white--text">可接单</small></v-chip>
+                <v-chip small label color="teal" v-if="item.state == 0"><small class="caption white--text">求代购</small></v-chip>
                 <v-chip small label color="grey" v-else><small class="caption white--text">报价中</small></v-chip>
               </v-flex>
-              <v-flex xs4 md5>
+              <v-flex xs4 md6>
                   <v-chip small color="red"  label class="white--text body-2">
                     <div v-if="item.amount"><small class="caption" >预计¥</small>{{item.amount}}</div>
                     <small class="caption" v-else>求报价</small>
@@ -80,30 +80,25 @@
   </div>
 </template>
 <script>
-import { Carousel, Slide } from "vue-carousel"
-import { avatarRoot } from "~/config"
+import { avatarRoot } from "~/config";
 
 export default {
-  components: {
-    Carousel,
-    Slide
-  },
-  props: ['items'],
-  data () {
+  props: ["items"],
+  data() {
     return {
       purchType: 0,
-      keyWords: '',
+      keyWords: "",
       filter: false,
       filters: {},
       avatarRoot: avatarRoot
-    }
+    };
   },
   methods: {
-    toDetail (item) {
-      this.$router.push('/purchase/' + item.id)
+    toDetail(item) {
+      this.$router.push("/purchase/" + item.id);
     }
   }
-}
+};
 </script>
 <style scoped>
 .img-herder img {

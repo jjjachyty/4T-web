@@ -48,14 +48,14 @@
 </template>
 
 <script>
-import Ads from '~/pages/Ads'
-import Certification from './Certification'
-import UserInfo from './UserInfo'
-import Guarantee from './Guarantee'
-import ModifyPasswd from './ModifyPasswd'
-import Address from './Address'
+import Ads from "~/pages/Ads";
+import Certification from "./Certification";
+import UserInfo from "./UserInfo";
+import Guarantee from "./Guarantee";
+import ModifyPasswd from "./ModifyPasswd";
+import Address from "./Address";
 
-import { mapGetters, mapActions} from 'vuex'
+import { mapGetters, mapActions } from "vuex";
 
 export default {
   components: {
@@ -67,71 +67,68 @@ export default {
     Address
   },
   data: () => ({
-    user: {avatar: ''},
+    user: { avatar: "" },
     active: 1,
-    items: [{
-      title: '基本信息',
-      id: 1,
-      icon: 'assignment_ind',
-      color: 'primary'
-    },
-    {
-      title: '实名认证',
-      id: 2,
-      icon: 'how_to_reg',
-      color: 'primary'
-    },
+    items: [
+      {
+        title: "基本信息",
+        id: 1,
+        icon: "far fa-id-card",
+        color: "primary"
+      },
+      {
+        title: "实名认证",
+        id: 2,
+        icon: "fas fa-user-check",
+        color: "primary"
+      },
       // {
       //   title: '担保',
       //   id: 3,
       //   icon: 'fa-wallet',
       //   color: 'primary'
       // },
-    {
-      title: '修改密码',
-      id: 4,
-      icon: 'password',
-      color: 'primary'
-    },
-    {
-      title: '收货地址',
-      id: 5,
-      icon: 'add',
-      color: 'pin_drop'
-    }
+      {
+        title: "修改密码",
+        id: 4,
+        icon: "fas fa-key",
+        color: "primary"
+      },
+      {
+        title: "收货地址",
+        id: 5,
+        icon: "fas fa-map-marked",
+        color: "primary"
+      }
     ]
-
   }),
   computed: {
     pc: {
-    // getter
-      get: function () {
+      // getter
+      get: function() {
         if (window.innerWidth > 960) {
-          return true
+          return true;
         } else {
-          false
+          false;
         }
       },
       // setter
-      set: function (newValue) {
-
-      }
+      set: function(newValue) {}
     }
   },
-  methods: {
-  },
-  mounted () {
-    this.$http.get('/user/info', {type: ''}).then(res => {
+  methods: {},
+  mounted() {
+    this.$http.get("/user/info", { type: "" }).then(res => {
       if (res.data.Status) {
-        this.user = res.data.Data
+        this.user = res.data.Data;
       } else {
-        this.$store.commit('ERROR', res.data.Error.Err)
+        this.$store.commit("ERROR", res.data.Error.Err);
       }
-    })
-    this.active = this.$route.params.active || 1
-    this.drawer = true
+    });
+    this.active = this.$route.params.active || 1;
+    this.drawer = true;
   }
-}
+};
 </script>
 
 

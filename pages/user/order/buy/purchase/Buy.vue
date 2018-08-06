@@ -5,25 +5,27 @@
 <br>
                 <v-card raised>
                     <v-layout row wrap >
-                                                <v-flex xs12 >
-                                                 <Header :order="order"></Header>
+                                  <v-flex xs12>
+                                                <Header :order="order"></Header>
 
-                        </v-flex>
-                                                <router-link :to="order.originalLink" class="grey lighten-5">
+                    </v-flex>
+         
+                    <v-flex xs12>
+                        <v-divider></v-divider>
+                        <router-link :to="order.originalLink" class="grey lighten-5">
+                        <v-card-text>
 
-                        <v-flex xs12 md12>
-                            <v-card-text>
-                                                       <Product :products="order.products"></Product>
+                                                                     <Product :products="order.products"></Product>
 
-                            </v-card-text>
-                        </v-flex>
-</router-link>
+                        </v-card-text>
+                                      </router-link>
+                    </v-flex>
                         <v-flex xs12>
                             <v-divider></v-divider>
                             <v-card-actions>
                                                          <v-spacer></v-spacer>
                                 <v-btn outline small @click="showCancel = !showCancel">取消订单</v-btn>
-                                <v-btn small outline color="deep-orange" @click="remind(index)" >提醒购买</v-btn>
+                                <!-- <v-btn small outline color="deep-orange" @click="remind(index)" >提醒购买</v-btn> -->
                             </v-card-actions>
                                                         <v-divider></v-divider>
                             <v-card v-if="showCancel" raised color="grey lighten-5">
@@ -32,8 +34,9 @@
                                 <v-divider></v-divider>
                                 <v-card-text>
                                     <v-radio-group v-model="reason">
+                                       <v-radio value="我不想要了" label="我不想要了"></v-radio>
+
                                         <v-radio value="卖家一直不购买" label="卖家一直不购买"></v-radio>
-                                        <v-radio value="我不想要了" label="我不想要了"></v-radio>
                                         <v-radio value="其他" label="其他"></v-radio>
                                     </v-radio-group>
                                     <v-text-field v-if="reason === '其他'" label="其他原因说明" textarea v-model="otherReason">
@@ -47,6 +50,10 @@
                                 </v-card-actions>
                                 </v-container>
                             </v-card>
+              
+
+
+
                         </v-flex>
                     </v-layout>
                 </v-card>
@@ -92,7 +99,10 @@ export default {
         })
         .then(res => {
           if (res.data.Status) {
-            this.$store.commit("SUCCESS", "取消订单成功");
+            this.$store.commit(
+              "SUCCESS",
+              "取消订单成功,退款将在三个工作日内返回到支付账户中"
+            );
             this.orders.splice(index, 1);
           } else {
             this.$store.commit("ERROR", res.data.Error.Err);

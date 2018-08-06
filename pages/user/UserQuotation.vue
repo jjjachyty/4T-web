@@ -31,11 +31,9 @@
                                 <v-flex xs12>
                                      发货时间{{item.deliveryTime | formatDate("YYYY-MM-DD")}}
                                 </v-flex>
-                                <v-flex xs v-if="item.state != '0'">
-                                    <span><small class="red--text">{{getLeft(item.expiryTime)}} </small></span>
-                                </v-flex>
-                                <v-flex xs v-if="item.state == '0'">
-                                    <span><small class="red--text">{{getLeft(item.refuseReason)}} </small></span>
+                                <v-flex xs >
+                                    <span v-if="item.state != '-1'"><small class="red--text">{{getLeft(item.expiryTime)}} </small></span>
+                                    <span v-if="item.state == '0'"><small class="red--text">{{getLeft(item.refuseReason)}} </small></span>
                                 </v-flex>
                             </v-layout>
                         </v-flex>
@@ -49,40 +47,40 @@
 </template>
 <script>
 export default {
-
-  data () {
+  data() {
     return {
       items: []
-    }
+    };
   },
-  computed: {
-
-  },
+  computed: {},
   methods: {
-    getLeft (expiryTime) {
-      var rest = ''
-      var mins = parseInt((this.string2Date(expiryTime).getTime() - (new Date()).getTime()) / 1000 / 60)
-      var hous = parseInt(mins / 60)
-      var days = parseInt(hous / 24)
+    getLeft(expiryTime) {
+      var rest = "";
+      var mins = parseInt(
+        (this.string2Date(expiryTime).getTime() - new Date().getTime()) /
+          1000 /
+          60
+      );
+      var hous = parseInt(mins / 60);
+      var days = parseInt(hous / 24);
       if (days > 0) {
-        rest += days + '天'
+        rest += days + "天";
       } else if (hous > 0) {
-        rest += hous + '小时'
+        rest += hous + "小时";
       } else if (mins > 0) {
-        rest += mins + '分钟后失效'
-      } else if (rest == '') {
-        rest = '已过期'
+        rest += mins + "分钟后失效";
+      } else if (rest == "") {
+        rest = "已过期";
       }
-      return rest
+      return rest;
     }
-
   },
-  created () {
-    this.$http.get('/user/quotations', {}).then(res => {
+  created() {
+    this.$http.get("/user/quotations", {}).then(res => {
       if (res.data.Status) {
-        this.items = res.data.Data
+        this.items = res.data.Data;
       }
-    })
+    });
   }
-}
+};
 </script>

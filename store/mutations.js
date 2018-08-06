@@ -9,7 +9,7 @@ export const state = {
   token: '',
   user: {},
   snackbar: {
-    timeout: 4000,
+    timeout: 3000,
     show: false,
     color: 'green',
     message: ''

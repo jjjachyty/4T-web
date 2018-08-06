@@ -8,7 +8,7 @@
       <v-card >
         <v-layout row wrap >
           <v-flex xs12>
-            <Top :order="order"></Top>
+            <Header :order="order"></Header>
           </v-flex>
          
 
@@ -31,7 +31,7 @@
 
                 <v-layout class="grey lighten-5">
                   <v-flex xs2 md1>
-                    <div v-viewer="options" class="images clearfix">
+                    <div v-viewer="viewerOptions" class="images clearfix">
                       <img :src="purchaseRoot+order.buyTicket+'?'+Number(new Date())" :data-source="purchaseRoot+order.buyTicket+'?'+Number(new Date())"
                         class="image">
                     </div>
@@ -56,13 +56,13 @@
                    <v-form ref="expressForm" lazy-validation>
                 <v-layout row wrap class="grey lighten-5" align-center justify-center>
                  <v-flex xs6>
-                   收货人:{{order.express.receivingAddress.userName}}
+                   收货人:{{order.buyer.express.receivingAddress.userName}}
                  </v-flex>
                   <v-flex xs6>
-                   电话:{{order.express.receivingAddress.phone}}
+                   电话:{{order.buyer.express.receivingAddress.phone}}
                  </v-flex>
                  <v-flex xs12>
-                   收货地址:{{order.express.receivingAddress.province+order.express.receivingAddress.city+order.express.receivingAddress.county+order.express.receivingAddress.street}}
+                   收货地址:{{order.buyer.express.receivingAddress.province+order.buyer.express.receivingAddress.city+order.buyer.express.receivingAddress.county+order.buyer.express.receivingAddress.street}}
                                  <v-divider></v-divider>
 
                  </v-flex>
@@ -130,59 +130,61 @@
   </v-app>
 </template>
 <script>
-import Top from './Top'
-import Product from './Product'
+import Header from "./Header";
+import Product from "./Product";
 export default {
   components: {
-    Top,
+    Header,
     Product
   },
-  data () {
+  data() {
     return {
       expand: [true],
       orders: [],
       express: {}
-
-    }
+    };
   },
   methods: {
-    cancel () {
-      this.showCancel = true
+    cancel() {
+      this.showCancel = true;
     },
-    deliver (index) {
-      var order = this.orders[index]
-      this.$http
-        .putJson('/user/order/' + order.id, {
-          id: order.id,
-          state: '2',
-          buyer: {express: this.express}
-        })
-        .then(res => {
-          if (res.data.Status) {
-            this.$store.commit(
-              'SUCCESS',
-              '发货成功已更新为[待收货],提醒买家准时收货'
-            )
-            this.orders.splice(index, 1)
-          } else {
-            this.$store.commit('ERROR', res.data.Error.Err)
-          }
-        })
+    deliver(index) {
+      var order = this.orders[index];
+      if (this.$refs.expressForm[0].validate()) {
+        this.$http
+          .putJson("/user/order/" + order.id, {
+            id: order.id,
+            state: "2",
+            buyer: { express: this.express }
+          })
+          .then(res => {
+            if (res.data.Status) {
+              this.$store.commit(
+                "SUCCESS",
+                "发货成功已更新为[待收货],提醒买家准时收货"
+              );
+              this.orders.splice(index, 1);
+            } else {
+              this.$store.commit("ERROR", res.data.Error.Err);
+            }
+          });
+      }
     }
   },
-  created () {
-    this.$http.get('/user/orders', {type: 1, identity: 1, state: '^2'}).then(res => {
-      if (res.data.Status) {
-        this.orders = res.data.Data
-      }
-    })
+  created() {
+    this.$http
+      .get("/user/orders", { type: 1, identity: 1, state: "^2" })
+      .then(res => {
+        if (res.data.Status) {
+          this.orders = res.data.Data;
+        }
+      });
   }
-}
+};
 </script>
 <style scoped>
-.image{
-    width: 100%;
-    height: 50px;
+.image {
+  width: 100%;
+  height: 50px;
 }
-
 </style>

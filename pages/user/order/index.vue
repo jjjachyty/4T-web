@@ -38,44 +38,43 @@
     </v-app>
 </template>
 <script>
-import BuyPurchase from './buy/purchase/Main'
-import SellPurchase from './sell/purchase/Main'
+import BuyPurchase from "./buy/purchase/Main";
+import SellPurchase from "./sell/purchase/Main";
 
 export default {
   components: {
     BuyPurchase,
     SellPurchase
   },
-  middleware: 'authenticated',
-  data () {
+  middleware: "authenticated",
+  data() {
     return {
       tab: null,
       identity: 0,
       orders: [],
       active: 1,
-      items: [{
-        title: '代购',
-        id: 1,
-        icon: 'assignment_ind',
-        color: 'primary'
-      },
-      {
-        title: '转卖',
-        id: 2,
-        icon: 'how_to_reg',
-        color: 'primary'
-      },
-      {
-        title: '旅拍',
-        id: 3,
-        icon: 'fa-key',
-        color: 'primary'
-      }
+      items: [
+        {
+          title: "代购",
+          id: 1,
+          icon: "assignment_ind",
+          color: "primary"
+        },
+        {
+          title: "转卖",
+          id: 2,
+          icon: "how_to_reg",
+          color: "primary"
+        },
+        {
+          title: "旅拍",
+          id: 3,
+          icon: "fa-key",
+          color: "primary"
+        }
       ]
-    }
+    };
   },
-  created () {
-
-  }
-}
+  created() {}
+};
 </script>

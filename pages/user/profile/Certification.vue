@@ -65,35 +65,35 @@
               <v-flex md3>
                 <v-subheader>{{idCardF.race}}</v-subheader>
               </v-flex>
-              <v-flex xs4 md2>
+              <v-flex xs4 md3>
                 <v-subheader class="black--text">出生日月:</v-subheader>
 
               </v-flex>
               <v-flex xs7 md9>
                 <v-subheader>{{idCardF.birthday}}</v-subheader>
               </v-flex>
-              <v-flex xs4 md2>
+              <v-flex xs4 md3>
                 <v-subheader class="black--text">住址:</v-subheader>
 
               </v-flex>
-              <v-flex xs8 md10>
+              <v-flex xs8 md9>
                 <v-subheader>{{idCardF.address}}</v-subheader>
               </v-flex>
-              <v-flex xs4 md2>
+              <v-flex xs4 md3>
                 <v-subheader class="black--text">证件号码:</v-subheader>
 
               </v-flex>
               <v-flex xs8 md9>
                 <v-subheader>{{idCardF.id_card_number}}</v-subheader>
               </v-flex>
-              <v-flex xs4 md2>
+              <v-flex xs4 md3>
                 <v-subheader class="black--text">有效期限:</v-subheader>
 
               </v-flex>
               <v-flex xs8 md9>
                 <v-subheader>{{idCardB.valid_date}}</v-subheader>
               </v-flex>
-              <v-flex xs4 md2>
+              <v-flex xs4 md3>
                 <v-subheader class="black--text">签发机关:</v-subheader>
 
               </v-flex>
@@ -113,18 +113,15 @@
 
 
 <script>
-import {
-  mapActions,
-  mapGetters
-} from 'vuex'
+import { mapActions, mapGetters } from "vuex";
 export default {
-  props: ['idCardF', 'idCardB', 'certified'],
-  data () {
+  props: ["idCardF", "idCardB", "certified"],
+  data() {
     return {
       edit: false,
       showError: false,
-      errorMessage: '',
-      type: 'error',
+      errorMessage: "",
+      type: "error",
       idCard1: {},
       idCard2: {}
       // certified:false,
@@ -134,77 +131,78 @@ export default {
       // idCardB:{
 
       // }
-    }
+    };
   },
   methods: {
     ...mapActions({
-      idCardOCR: 'idCardOCR',
-      valid: 'identification'
-
+      idCardOCR: "idCardOCR",
+      valid: "identification"
     }),
-    upload () {
+    upload() {
       if (!this.croppa.hasImage()) {
-        alert('no image to upload')
-        return
+        alert("no image to upload");
+        return;
       }
 
-      this.croppa.generateBlob((blob) => {
-        var fd = new FormData()
-        fd.append('file', blob)
-        fd.append('other', 'blahblahblah')
+      this.croppa.generateBlob(blob => {
+        var fd = new FormData();
+        fd.append("file", blob);
+        fd.append("other", "blahblahblah");
         $.ajax({
-          url: 'http://www.xxx.com/api/upload',
+          url: "http://www.xxx.com/api/upload",
           data: fd,
-          type: 'POST',
+          type: "POST",
           processData: false,
           contentType: false,
-          success: function (data) {
-            alert(data)
+          success: function(data) {
+            alert(data);
           }
-        })
-      })
+        });
+      });
     },
-    submit () {
+    submit() {
       if (this.idCardF.id_card_number && this.idCardB.valid_date) {
-        this.idCardF.issued_by = this.idCardB.issued_by
-        this.idCardF.valid_date = this.idCardB.valid_date
+        this.idCardF.issued_by = this.idCardB.issued_by;
+        this.idCardF.valid_date = this.idCardB.valid_date;
         this.valid(this.idCardF).then(res => {
-          this.showError = true
-          this.type = 'success'
-          this.errorMessage = '认证成功'
-          this.edit = false
-          this.certified = true
-          this.$store.commit('ID_CARD_VALID')
-        })
+          this.showError = true;
+          this.type = "success";
+          this.errorMessage = "认证成功";
+          this.edit = false;
+          this.certified = true;
+          this.$store.commit("ID_CARD_VALID");
+        });
       } else {
-        this.showError = true
-        this.type = 'error'
-        this.errorMessage = '身份信息不完整,请重新上传'
+        this.showError = true;
+        this.type = "error";
+        this.errorMessage = "身份信息不完整,请重新上传";
       }
     },
-    handleNewImage (val) {
-      var imageBase64 = (val == 1) ? encodeURI(this.idCard1.generateDataUrl('image/jpeg')) : encodeURI(this.idCard2.generateDataUrl('image/jpeg'))
+    handleNewImage(val) {
+      var imageBase64 =
+        val == 1
+          ? encodeURI(this.idCard1.generateDataUrl("image/jpeg"))
+          : encodeURI(this.idCard2.generateDataUrl("image/jpeg"));
 
       this.idCardOCR({
         img: imageBase64
-      }).then(res => {
-        console.log('idCardOCR then', res)
-        if (val == 1) {
-          this.idCardF = res.data.Data.idCard
-        } else {
-          this.idCardB = res.data.Data.idCard
-        }
-      }).catch(res => {
-        console.log('idCardOCR catch', res)
-        this.showError = true
-        this.errorMessage = res.Error.Err
       })
+        .then(res => {
+          console.log("idCardOCR then", res);
+          if (val == 1) {
+            this.idCardF = res.data.Data.idCard;
+          } else {
+            this.idCardB = res.data.Data.idCard;
+          }
+        })
+        .catch(res => {
+          console.log("idCardOCR catch", res);
+          this.showError = true;
+          this.errorMessage = res.Error.Err;
+        });
     }
   },
-  created () {
-
-  }
-
-}
+  created() {}
+};
 </script>
 

@@ -77,7 +77,7 @@
 
             </v-card-actions>
         </v-card>
-        <Ads :textTop="40"></Ads>
+        <Ads></Ads>
         <v-card>
             <v-card-title>
                 <v-icon small>message</v-icon>
@@ -86,7 +86,7 @@
             <v-card-text>
                 <v-card>
                     <v-card-text>
-                        <div v-if="'' != $store.state.token">
+                        <div v-if="$store.state.token.length>0">
 
                             <v-avatar v-if="newComment.anonymous" size="50" color="grey lighten-4">
                                 <img :src="'/avatar/'+$store.state.User.user.anNickName+'.png'">
@@ -516,6 +516,9 @@ export default {
           this.$store.commit("ERROR", "获取热论失败");
         }
       });
+  },
+  mounted() {
+    this.$store.dispatch("seo");
   },
   asyncData(context) {
     var id = context.params.id;
